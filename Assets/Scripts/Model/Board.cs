@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 public class Board
@@ -70,9 +71,57 @@ public class Board
 		return false;
 	}
 
-	public List<(int, int)> GetMovements(Piece piece)
+	public List<Position> GetMovements(Piece piece)
 	{
+		//TODO: FALTA COMPROBAR QUE SI ES EL QUART TORN, NOMÉS ES POT MOURE LA REINA
+
 		//TODO
+		List<Position> movements = new List<Position>();
+		Position pos = GetPiecePosition(piece);
+		if (pos == null)
+		// La peça no està en joc, totes tenen el mateix comportament independentment del tipus d'insecte
+		{
+			
+		}
+		else
+		// La peça està en joc, cada insecte te un comportament diferent
+		{
+			// Comprovem si es pot moure
+			if (IsBlocked(piece))
+				return movements;
+
+			switch (piece.type)
+			{
+				case BugType.Queen:
+					
+					break;
+				case BugType.Spider:
+					
+					break;
+				case BugType.Beetle:
+					
+					break;
+				case BugType.Grasshopper:
+
+					break;
+				case BugType.Ant:
+
+					break;
+			}
+		}
+
+		return movements;
+	}
+
+	public Position[] OuterPerimeter()
+	{
+		// TODO
+		return null;
+	}
+
+	public Position[] Perimeter(Piece piece)
+	{
+		// TODO
 		return null;
 	}
 
