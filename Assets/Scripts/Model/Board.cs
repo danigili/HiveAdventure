@@ -7,13 +7,13 @@ using System.Runtime.InteropServices.WindowsRuntime;
 public class Board
 {
 	// Peces
-	private Dictionary<(int, int), Piece> placedPieces;
+	private Dictionary<(int, int, int), Piece> placedPieces;
 	private List<Piece> notPlacedPieces;
 	private int turns;
 
 	public Board()
 	{
-		placedPieces = new Dictionary<(int, int), Piece>();
+		placedPieces = new Dictionary<(int, int, int), Piece>();
 		notPlacedPieces = new List<Piece>();
 		Initialize();
 	}
@@ -49,7 +49,7 @@ public class Board
 		notPlacedPieces.Add(new Piece(true, BugType.Ant, 2));
 	}
 
-	public Dictionary<(int, int), Piece> GetPlacedPieces()
+	public Dictionary<(int, int, int), Piece> GetPlacedPieces()
 	{
 		 return placedPieces;
 	}
@@ -125,7 +125,7 @@ public class Board
 		return null;
 	}
 
-	public bool MovePiece(Piece piece, (int, int) position)
+	public bool MovePiece(Piece piece, (int, int, int) position)
 	{
 		//TODO FALTA COMPROBAR
 		if (placedPieces.ContainsKey(position))
@@ -144,7 +144,7 @@ public class Board
 
 	public Position GetPiecePosition(Piece piece)
 	{
-		foreach (KeyValuePair<(int, int), Piece> pair in placedPieces)
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
 			if (EqualityComparer<Piece>.Default.Equals(pair.Value, piece))
 				return new Position(pair.Key.Item1, pair.Key.Item2);
 		return null;
@@ -161,7 +161,7 @@ public class Board
 	{
 		Position[] neighbors = GetSurroundings(pos);
 		for (int i = 0; i < neighbors.Length; i++)
-			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y)))
+			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y,0)))
 				neighbors[i] = null;
 		return neighbors;
 	}

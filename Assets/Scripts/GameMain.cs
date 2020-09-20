@@ -23,19 +23,16 @@ public class GameMain : MonoBehaviour
         Board board = new Board();
         List<Piece> notPlaced = board.GetNotPlacedPieces();
         Piece p = notPlaced[0];
-        board.MovePiece(notPlaced[0], (-1,-2));//
-        board.MovePiece(notPlaced[0], (0, -2));//
-        board.MovePiece(notPlaced[0], (-1, -1));//
-        board.MovePiece(notPlaced[0], (-1, 0));//
-        board.MovePiece(notPlaced[0], (0, -1));//
-        board.MovePiece(notPlaced[0], (1, 0));
-        board.MovePiece(notPlaced[0], (1, 1));
-        board.MovePiece(notPlaced[0], (0, 0));
+        board.MovePiece(notPlaced[0], (-1,-2,0));//
+        board.MovePiece(notPlaced[0], (0, -2,0));//
+        board.MovePiece(notPlaced[0], (-1, -1,0));//
+        board.MovePiece(notPlaced[0], (-1, 0,0));//
+        board.MovePiece(notPlaced[0], (0, -1,0));//
+        board.MovePiece(notPlaced[0], (1, 0,0));
+        board.MovePiece(notPlaced[0], (1, 1,0));
+        board.MovePiece(notPlaced[0], (0, 0,0));
+        //board.MovePiece(notPlaced[0], (0, 0, 1));
         boardView.GetComponent<BoardView>().Initialize(board);
-        for (int i = 0; i < 100000; i++)
-        {
-            board.BreaksCohesion(p);
-        }
         Debug.Log("Breaks");
     }
 }
