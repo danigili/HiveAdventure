@@ -24,6 +24,7 @@ public class GameMain : MonoBehaviour
         List<Piece> notPlaced = board.GetNotPlacedPieces();
         Piece p = notPlaced[0];
         board.MovePiece(notPlaced[0], (-1,-2,0));//
+        board.MovePiece(notPlaced[0], (-1, -2, 1));//
         board.MovePiece(notPlaced[0], (0, -2,0));//
         board.MovePiece(notPlaced[0], (-1, -1,0));//
         board.MovePiece(notPlaced[0], (-1, 0,0));//

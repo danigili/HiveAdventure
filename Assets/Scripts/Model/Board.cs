@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine;
 
 public class Board
 {
@@ -100,20 +101,24 @@ public class Board
 			if (IsBlocked(piece))
 				return movements;
 
-			piece.type = BugType.Grasshopper;
+			piece.type = BugType.Beetle;
+			Position[] surroundings = GetSurroundings(pos);
+			Position[] neighbors = GetNeighbors(pos);
 			switch (piece.type)
 			{
 				case BugType.Queen:
-					
+					SlidePositions(surroundings, neighbors, ref movements);
 					break;
 				case BugType.Spider:
 					
 					break;
 				case BugType.Beetle:
-					
+					SlidePositions(surroundings, neighbors, ref movements);
+					foreach (Position p in neighbors)
+						if (p != null && !placedPieces.ContainsKey((p.x, p.y, p.z+1)))
+							movements.Add(new Position(p.x, p.y, p.z + 1));
 					break;
 				case BugType.Grasshopper:
-					Position[] surroundings = GetSurroundings(pos);
 					for (int i = 0; i < surroundings.Length; i++)
 					{
 						Position nextPos = surroundings[i];
@@ -130,6 +135,20 @@ public class Board
 		}
 
 		return movements;
+	}
+
+
+	public void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements)
+	{
+		for (int i = 0; i < neighbors.Length; i++)
+		{
+			if (neighbors[i] != null)
+				continue;
+			int before = i == 0 ? 5 : i - 1;
+			int after = i == 5 ? 0 : i + 1;
+			if ((neighbors[before] == null) != (neighbors[after] == null))
+				movements.Add(surroundings[i]);
+		}
 	}
 
 	public Position[] OuterPerimeter()
@@ -180,7 +199,7 @@ public class Board
 	{
 		Position[] neighbors = GetSurroundings(pos);
 		for (int i = 0; i < neighbors.Length; i++)
-			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y,0)))
+			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y, 0)))
 				neighbors[i] = null;
 		return neighbors;
 	}
@@ -246,7 +265,10 @@ public class Board
 		// Si la longitud final del set és igual al nombre de peces -1, significa que totes les peces son adjacents entre elles.
 		List<Position> set = new List<Position>(); //TODO: FALTA OPTIMITZAR AMB ESTRUCTURA DE DADES PROPIA
 		Position piecePos = GetPiecePosition(piece);
+		if (piecePos.z != 0) // Els escarabats no poden trencar la cohesió
+			return false;
 		int i = 0;
+		int beetlesOnTop = 0; // Els escarabats que estan per sobre d'altres peces no compten en el càlcul de la cohesió.
 		if (placedPieces.First().Value != piece)
 			set.Add(new Position(placedPieces.First().Key.Item1, placedPieces.First().Key.Item2));
 		else
@@ -259,10 +281,12 @@ public class Board
 				foreach (Position p in neighbors)
 					if (p!=null && !p.Equals(piecePos) && !set.Contains(p))
 						set.Add(p);
+				if (placedPieces.ContainsKey((set[i].x, set[i].y, set[i].z + 1)))
+					beetlesOnTop++;
 			}
 			i++;
 		}
-		if (set.Count + 1 == placedPieces.Count) //TODO: FALTA TENIR EN COMPTE LA TERCERA DIMENSIÓ
+		if (set.Count + 1 + beetlesOnTop == placedPieces.Count) //TODO: FALTA TENIR EN COMPTE LA TERCERA DIMENSIÓ
 			return false;
 		return true;
 	}

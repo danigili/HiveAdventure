@@ -95,6 +95,7 @@ public class BoardView : MonoBehaviour
             GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
             instance.GetComponent<PieceObject>().x = pos.x;
             instance.GetComponent<PieceObject>().y = pos.y;
+            instance.GetComponent<PieceObject>().z = pos.z;
         }
     }
 
