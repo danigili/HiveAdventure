@@ -67,7 +67,17 @@ public class Board
 
 	public bool IsBlocked(Piece piece)
 	{
-		//TODO
+		// La peça no es pot moure si
+		// Trenca la cohesió
+		if (BreaksCohesion(piece))
+			return true;
+
+		// Si té una peça a sobre
+		Position pos = GetPiecePosition(piece);
+		if (placedPieces.ContainsKey((pos.x, pos.y, pos.z + 1)))
+			return true;
+
+		//TODO: FALTES MÉS CASOS
 		return false;
 	}
 
@@ -90,6 +100,7 @@ public class Board
 			if (IsBlocked(piece))
 				return movements;
 
+			piece.type = BugType.Grasshopper;
 			switch (piece.type)
 			{
 				case BugType.Queen:
@@ -102,7 +113,15 @@ public class Board
 					
 					break;
 				case BugType.Grasshopper:
-
+					Position[] surroundings = GetSurroundings(pos);
+					for (int i = 0; i < surroundings.Length; i++)
+					{
+						Position nextPos = surroundings[i];
+						while (placedPieces.ContainsKey((nextPos.x, nextPos.y, 0)))
+							nextPos = GetSurrounding(nextPos, i);
+						if (nextPos != surroundings[i])
+							movements.Add(nextPos);
+					}
 					break;
 				case BugType.Ant:
 
@@ -171,7 +190,7 @@ public class Board
 		Position[] surroundings = new Position[6];
 		if (pos.y % 2 == 0)
 		{
-			surroundings[0] = new Position(pos.x    , pos.y + 2);
+			surroundings[0] = new Position(pos.x     , pos.y + 2);
 			surroundings[1] = (new Position(pos.x + 1, pos.y + 1));
 			surroundings[2] = (new Position(pos.x + 1, pos.y - 1));
 			surroundings[3] = (new Position(pos.x    , pos.y - 2));
@@ -188,6 +207,35 @@ public class Board
 			surroundings[5] = (new Position(pos.x - 1, pos.y + 1));
 		}
 		return surroundings;
+	}
+
+	public Position GetSurrounding(Position pos, int direction)
+	{
+		if (pos.y % 2 == 0)
+		{
+			switch (direction)
+			{
+				case 0:	return new Position(pos.x    , pos.y + 2);
+				case 1:	return new Position(pos.x + 1, pos.y + 1);
+				case 2:	return new Position(pos.x + 1, pos.y - 1);
+				case 3:	return new Position(pos.x    , pos.y - 2);
+				case 4:	return new Position(pos.x    , pos.y - 1);
+				case 5:	return new Position(pos.x    , pos.y + 1);
+			}
+		}
+		else
+		{
+			switch (direction)
+			{
+				case 0:	return new Position(pos.x    , pos.y + 2);
+				case 1:	return new Position(pos.x    , pos.y + 1);
+				case 2:	return new Position(pos.x    , pos.y - 1);
+				case 3:	return new Position(pos.x    , pos.y - 2);
+				case 4:	return new Position(pos.x - 1, pos.y - 1);
+				case 5: return new Position(pos.x - 1, pos.y + 1);
+			}
+		}
+		return null;
 	}
 
 	public bool BreaksCohesion(Piece piece)
@@ -214,7 +262,7 @@ public class Board
 			}
 			i++;
 		}
-		if (set.Count + 1 == placedPieces.Count)
+		if (set.Count + 1 == placedPieces.Count) //TODO: FALTA TENIR EN COMPTE LA TERCERA DIMENSIÓ
 			return false;
 		return true;
 	}

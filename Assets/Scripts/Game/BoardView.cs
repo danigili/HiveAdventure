@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.TerrainAPI;
 using UnityEngine;
 
@@ -87,6 +88,14 @@ public class BoardView : MonoBehaviour
     public void ClickDown(Piece piece)
     {
         Debug.Log(model.BreaksCohesion(piece));
+        List<Position> positions = model.GetMovements(piece);
+
+        foreach (Position pos in positions)
+        {
+            GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
+            instance.GetComponent<PieceObject>().x = pos.x;
+            instance.GetComponent<PieceObject>().y = pos.y;
+        }
     }
 
 
