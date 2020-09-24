@@ -574,7 +574,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   piecePrefab: {fileID: 7806107929303656012, guid: 654465f789645f44382321353bf56072,
     type: 3}
+  markerPrefab: {fileID: 7806107929303656012, guid: 030891dd8a9e77046a002e8a294dfd8c,
+    type: 3}
   pieces: []
+  selectedPiece: {fileID: 0}
+  markers: []
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

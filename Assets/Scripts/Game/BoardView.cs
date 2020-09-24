@@ -7,8 +7,12 @@ using UnityEngine;
 public class BoardView : MonoBehaviour
 {
     public GameObject piecePrefab;
+    public GameObject markerPrefab;
     private Board model;
     public List<PieceObject> pieces;
+    public PieceObject selectedPiece;
+
+    public List<GameObject> markers = new List<GameObject>();
 
     void Start()
     {
@@ -33,10 +37,11 @@ public class BoardView : MonoBehaviour
         this.model = board;
         Dictionary<(int, int, int), Piece>  placedPieces = model.GetPlacedPieces();
         List<Piece> notPlacedPieces = model.GetNotPlacedPieces();
+        bool hola = true;
         foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
         {
             GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
-            instance.GetComponent<PieceObject>().piece = pair.Value;
+            instance.GetComponent<PieceObject>().Initialize(pair.Value);
             instance.GetComponent<PieceObject>().x = pair.Key.Item1;
             instance.GetComponent<PieceObject>().y = pair.Key.Item2;
             instance.GetComponent<PieceObject>().z = pair.Key.Item3;
@@ -85,19 +90,35 @@ public class BoardView : MonoBehaviour
 
     }
 
-    public void ClickDown(Piece piece)
+    public void ClickDown(PieceObject piece)
     {
-        Debug.Log(model.BreaksCohesion(piece));
-        List<Position> positions = model.GetMovements(piece);
-
-        foreach (Position pos in positions)
+        Debug.Log(model.BreaksCohesion(piece.piece));
+        List<Position> positions = model.GetMovements(piece.piece);
+        selectedPiece = piece;
+        foreach (GameObject m in markers)
+            m.SetActive(false);
+        for (int i = 0; i <positions.Count; i++)
         {
-            GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
-            instance.GetComponent<PieceObject>().x = pos.x;
-            instance.GetComponent<PieceObject>().y = pos.y;
-            instance.GetComponent<PieceObject>().z = pos.z;
+            if (markers.Count > i && !markers[i].activeSelf)
+            {
+                markers[i].GetComponent<Marker>().SetHexPosition(positions[i].x, positions[i].y, positions[i].z);
+                markers[i].SetActive(true);
+            }
+            else
+            {
+                GameObject instance = Instantiate(markerPrefab, transform); //TODO: PONER EN UNA SOLA LINEA
+                instance.GetComponent<Marker>().SetHexPosition(positions[i].x, positions[i].y, positions[i].z);
+                markers.Add(instance);
+            }
         }
     }
 
-
+    public void ClickDownMarker(Marker marker)
+    {
+        model.MovePiece(selectedPiece.piece, (marker.x, marker.y, marker.z));
+        Position newPos = model.GetPiecePosition(selectedPiece.piece);
+        selectedPiece.SetHexPosition(newPos.x, newPos.y, newPos.z);
+        foreach (GameObject m in markers)
+            m.SetActive(false);
+    }
 }

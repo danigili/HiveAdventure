@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PieceObject : MonoBehaviour
+public class PieceObject : HexObject
 {
     public Piece piece;
-    public int x;
-    public int y;
-    public int z;
-    public static float distance = 1.8f;
-    public static float height = 0.8f;
+
 
     void Start()
     {
@@ -18,17 +14,26 @@ public class PieceObject : MonoBehaviour
 
     void Update()
     {
-        Vector3 pos = transform.position;
-        pos.x =  distance * 1.73205f * x;
-        pos.y = height * z;
-        pos.z = distance * y/2;
-        if (y % 2 == 0)
-            pos.x += distance * 1.73205f/2;
-        transform.position = pos;
+        transform.position = GetWorldPosition();
     }
 
     void OnMouseDown()
     {
-        transform.GetComponentInParent<BoardView>().ClickDown(piece);
+        transform.GetComponentInParent<BoardView>().ClickDown(this);
+    }
+
+
+    public void Initialize(Piece piece)
+    {
+        this.piece = piece;
+        SetTexture();        
+    }
+
+    private void SetTexture()
+    { 
+        Texture2D texture = Resources.Load<Texture2D>("Textures/" + piece.GetBugTypeName() + "_" + (piece.side ? "black" : "white") + "_bw");
+        if (texture == null)
+            texture = Resources.Load<Texture2D>("Textures/green");
+        GetComponent<Renderer>().material.mainTexture = texture;
     }
 }

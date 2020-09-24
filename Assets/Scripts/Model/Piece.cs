@@ -24,4 +24,16 @@ public class Piece
 		this.number = number;
 	}
 
+	public string GetBugTypeName()
+	{
+		switch (type)
+		{
+			case BugType.Queen:       return "queen";
+			case BugType.Spider:      return "spider";
+			case BugType.Beetle:      return "beetle";
+			case BugType.Grasshopper: return "grasshopper";
+			case BugType.Ant:         return "ant";
+		}
+		return "";
+	}
 }

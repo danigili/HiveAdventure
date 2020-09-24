@@ -101,7 +101,6 @@ public class Board
 			if (IsBlocked(piece))
 				return movements;
 
-			piece.type = BugType.Beetle;
 			Position[] surroundings = GetSurroundings(pos);
 			Position[] neighbors = GetNeighbors(pos);
 			switch (piece.type)
@@ -110,7 +109,7 @@ public class Board
 					SlidePositions(surroundings, neighbors, ref movements);
 					break;
 				case BugType.Spider:
-					
+					// TODO
 					break;
 				case BugType.Beetle:
 					SlidePositions(surroundings, neighbors, ref movements);
@@ -129,7 +128,7 @@ public class Board
 					}
 					break;
 				case BugType.Ant:
-
+					// TODO
 					break;
 			}
 		}
@@ -173,6 +172,12 @@ public class Board
 		{
 			placedPieces.Add(position, piece);
 			return true;
+		}
+		else
+		{
+			Position oldPos = GetPiecePosition(piece);
+			placedPieces.Remove((oldPos.x, oldPos.y, oldPos.z));
+			placedPieces.Add(position, piece);
 		}
 
 		// TODO FALTA SEGUIR

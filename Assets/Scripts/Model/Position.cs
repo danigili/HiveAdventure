@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 
 public class Position
 {
@@ -27,5 +25,10 @@ public class Position
         if (obj is Position)
             return this.x == ((Position)obj).x && this.y == ((Position)obj).y;
         return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return ("" + x + "," + y + "," + z).GetHashCode();
     }
 }
