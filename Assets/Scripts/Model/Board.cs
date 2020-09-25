@@ -27,8 +27,8 @@ public class Board
 		placedPieces.Clear();
 		turns = 0;
 		notPlacedPieces.Add(new Piece(false, BugType.Queen, 0));
-		notPlacedPieces.Add(new Piece(false, BugType.Spider, 0));
-		notPlacedPieces.Add(new Piece(false, BugType.Spider, 1));
+		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 3));
+		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 4));
 		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 0));
 		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 1));
 		notPlacedPieces.Add(new Piece(false, BugType.Grasshopper, 0));
@@ -112,10 +112,7 @@ public class Board
 					// TODO
 					break;
 				case BugType.Beetle:
-					SlidePositions(surroundings, neighbors, ref movements);
-					foreach (Position p in neighbors)
-						if (p != null && !placedPieces.ContainsKey((p.x, p.y, p.z+1)))
-							movements.Add(new Position(p.x, p.y, p.z + 1));
+					BeetleMovements(pos, surroundings, neighbors, ref movements);
 					break;
 				case BugType.Grasshopper:
 					for (int i = 0; i < surroundings.Length; i++)
@@ -136,6 +133,37 @@ public class Board
 		return movements;
 	}
 
+	public void BeetleMovements(Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements)
+	{
+		Position downPos = new Position(pos.x, pos.y, pos.z-1);
+
+		for (int i = 0; i < neighbors.Length; i++)
+		{
+			int before = i == 0 ? 5 : i - 1;
+			int after = i == 5 ? 0 : i + 1;
+
+			// Comportament per sobre de les peces
+			if (pos.z > 0 && (neighbors[before] == null || neighbors[after] == null))
+			{
+				if (placedPieces.ContainsKey((surroundings[i].x, surroundings[i].y, surroundings[i].z + 1)))
+					continue;
+				else if (placedPieces.ContainsKey((surroundings[i].x, surroundings[i].y, surroundings[i].z)))
+					movements.Add(new Position(surroundings[i].x, surroundings[i].y, surroundings[i].z + 1));
+				else if (placedPieces.ContainsKey((surroundings[i].x, surroundings[i].y, surroundings[i].z - 1)))
+					movements.Add(surroundings[i]);
+				else if (pos.z == 1 || placedPieces.ContainsKey((surroundings[i].x, surroundings[i].y, surroundings[i].z - 2)))
+					movements.Add(new Position(surroundings[i].x, surroundings[i].y, surroundings[i].z - 1));
+			}
+			// Comportament a nivell de terra
+			else 
+			{
+				if ((neighbors[before] == null) != (neighbors[after] == null) && neighbors[i] == null)
+					movements.Add(surroundings[i]);
+				if (neighbors[i] != null && !placedPieces.ContainsKey((surroundings[i].x, surroundings[i].y, surroundings[i].z + 1)))
+					movements.Add(new Position(surroundings[i].x, surroundings[i].y, surroundings[i].z + 1));
+			}
+		}
+	}
 
 	public void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements)
 	{
@@ -189,7 +217,7 @@ public class Board
 	{
 		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
 			if (EqualityComparer<Piece>.Default.Equals(pair.Value, piece))
-				return new Position(pair.Key.Item1, pair.Key.Item2);
+				return new Position(pair.Key.Item1, pair.Key.Item2, pair.Key.Item3);
 		return null;
 	}
 
@@ -204,7 +232,7 @@ public class Board
 	{
 		Position[] neighbors = GetSurroundings(pos);
 		for (int i = 0; i < neighbors.Length; i++)
-			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y, 0)))
+			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y, neighbors[i].z)))
 				neighbors[i] = null;
 		return neighbors;
 	}
@@ -214,21 +242,21 @@ public class Board
 		Position[] surroundings = new Position[6];
 		if (pos.y % 2 == 0)
 		{
-			surroundings[0] = new Position(pos.x     , pos.y + 2);
-			surroundings[1] = (new Position(pos.x + 1, pos.y + 1));
-			surroundings[2] = (new Position(pos.x + 1, pos.y - 1));
-			surroundings[3] = (new Position(pos.x    , pos.y - 2));
-			surroundings[4] = (new Position(pos.x    , pos.y - 1));
-			surroundings[5] = (new Position(pos.x    , pos.y + 1));
+			surroundings[0] = new Position(pos.x     , pos.y + 2, pos.z);
+			surroundings[1] = (new Position(pos.x + 1, pos.y + 1, pos.z));
+			surroundings[2] = (new Position(pos.x + 1, pos.y - 1, pos.z));
+			surroundings[3] = (new Position(pos.x    , pos.y - 2, pos.z));
+			surroundings[4] = (new Position(pos.x    , pos.y - 1, pos.z));
+			surroundings[5] = (new Position(pos.x    , pos.y + 1, pos.z));
 		}
 		else
 		{
-			surroundings[0] = (new Position(pos.x    , pos.y + 2));
-			surroundings[1] = (new Position(pos.x    , pos.y + 1));
-			surroundings[2] = (new Position(pos.x    , pos.y - 1));
-			surroundings[3] = (new Position(pos.x    , pos.y - 2));
-			surroundings[4] = (new Position(pos.x - 1, pos.y - 1));
-			surroundings[5] = (new Position(pos.x - 1, pos.y + 1));
+			surroundings[0] = (new Position(pos.x    , pos.y + 2, pos.z));
+			surroundings[1] = (new Position(pos.x    , pos.y + 1, pos.z));
+			surroundings[2] = (new Position(pos.x    , pos.y - 1, pos.z));
+			surroundings[3] = (new Position(pos.x    , pos.y - 2, pos.z));
+			surroundings[4] = (new Position(pos.x - 1, pos.y - 1, pos.z));
+			surroundings[5] = (new Position(pos.x - 1, pos.y + 1, pos.z));
 		}
 		return surroundings;
 	}
@@ -239,24 +267,24 @@ public class Board
 		{
 			switch (direction)
 			{
-				case 0:	return new Position(pos.x    , pos.y + 2);
-				case 1:	return new Position(pos.x + 1, pos.y + 1);
-				case 2:	return new Position(pos.x + 1, pos.y - 1);
-				case 3:	return new Position(pos.x    , pos.y - 2);
-				case 4:	return new Position(pos.x    , pos.y - 1);
-				case 5:	return new Position(pos.x    , pos.y + 1);
+				case 0:	return new Position(pos.x    , pos.y + 2, pos.z);
+				case 1:	return new Position(pos.x + 1, pos.y + 1, pos.z);
+				case 2:	return new Position(pos.x + 1, pos.y - 1, pos.z);
+				case 3:	return new Position(pos.x    , pos.y - 2, pos.z);
+				case 4:	return new Position(pos.x    , pos.y - 1, pos.z);
+				case 5:	return new Position(pos.x    , pos.y + 1, pos.z);
 			}
 		}
 		else
 		{
 			switch (direction)
 			{
-				case 0:	return new Position(pos.x    , pos.y + 2);
-				case 1:	return new Position(pos.x    , pos.y + 1);
-				case 2:	return new Position(pos.x    , pos.y - 1);
-				case 3:	return new Position(pos.x    , pos.y - 2);
-				case 4:	return new Position(pos.x - 1, pos.y - 1);
-				case 5: return new Position(pos.x - 1, pos.y + 1);
+				case 0:	return new Position(pos.x    , pos.y + 2, pos.z);
+				case 1:	return new Position(pos.x    , pos.y + 1, pos.z);
+				case 2:	return new Position(pos.x    , pos.y - 1, pos.z);
+				case 3:	return new Position(pos.x    , pos.y - 2, pos.z);
+				case 4:	return new Position(pos.x - 1, pos.y - 1, pos.z);
+				case 5: return new Position(pos.x - 1, pos.y + 1, pos.z);
 			}
 		}
 		return null;
@@ -286,8 +314,13 @@ public class Board
 				foreach (Position p in neighbors)
 					if (p!=null && !p.Equals(piecePos) && !set.Contains(p))
 						set.Add(p);
-				if (placedPieces.ContainsKey((set[i].x, set[i].y, set[i].z + 1)))
+				int j = 1;
+				while (placedPieces.ContainsKey((set[i].x, set[i].y, set[i].z + j)))
+				{ 
 					beetlesOnTop++;
+					j++;
+				}
+				
 			}
 			i++;
 		}
