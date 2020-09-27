@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 
+[System.Serializable]
 public class Position
 {
     public int x;
@@ -16,6 +17,25 @@ public class Position
     public Position(int x, int y, int z) : this(x, y)
     {
         this.z = z;
+    }
+
+    public Position((int, int, int) position)
+    {
+        SetPosition(position);
+    }
+
+    public void SetPosition(int x, int y, int z)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public void SetPosition((int, int, int) position)
+    {
+        this.x = position.Item1;
+        this.y = position.Item2;
+        this.z = position.Item3;
     }
 
     public override bool Equals(object obj)

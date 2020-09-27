@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.TerrainAPI;
 using UnityEngine;
+using System;
+using FullSerializer;
 
 public class BoardView : MonoBehaviour
 {
@@ -58,17 +59,7 @@ public class BoardView : MonoBehaviour
 
     public void PruobaMove()
     {
-        //Debug.Log(transform.GetComponentsInChildren<PieceObject>().Length);
-        //model.MovePiece(transform.GetComponentsInChildren<PieceObject>()[8].piece, (0, -2));
-        //UpdatePositions();
 
-        Position[] positions = model.GetSurroundings(new Position(-1, -1));
-        foreach (Position pos in positions)
-        {
-            GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
-            instance.GetComponent<PieceObject>().x = pos.x;
-            instance.GetComponent<PieceObject>().y = pos.y;
-        }
     }
 
     public void UpdatePositions()
@@ -92,7 +83,6 @@ public class BoardView : MonoBehaviour
 
     public void ClickDown(PieceObject piece)
     {
-        Debug.Log(model.BreaksCohesion(piece.piece));
         List<Position> positions = model.GetMovements(piece.piece);
         selectedPiece = piece;
         foreach (GameObject m in markers)

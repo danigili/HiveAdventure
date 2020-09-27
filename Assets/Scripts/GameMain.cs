@@ -17,23 +17,10 @@ public class GameMain : MonoBehaviour
     {
         
     }
+
     public void Click1()
     {
         Debug.Log("HOLA");
-        Board board = new Board();
-        List<Piece> notPlaced = board.GetNotPlacedPieces();
-        Piece p = notPlaced[0];
-        board.MovePiece(notPlaced[0], (-1,-2,0));//
-        board.MovePiece(notPlaced[0], (-1, -2, 1));//
-        board.MovePiece(notPlaced[0], (0, -2,0));//
-        board.MovePiece(notPlaced[0], (-1, -1,0));//
-        board.MovePiece(notPlaced[0], (-1, 0,0));//
-        board.MovePiece(notPlaced[0], (0, -1,0));//
-        board.MovePiece(notPlaced[0], (1, 0,0));
-        board.MovePiece(notPlaced[0], (1, 1,0));
-        board.MovePiece(notPlaced[0], (0, 0,0));
-        //board.MovePiece(notPlaced[0], (0, 0, 1));
-        boardView.GetComponent<BoardView>().Initialize(board);
-        Debug.Log("Breaks");
+        boardView.GetComponent<BoardView>().Initialize(BoardSerialization.FromFile("Text/Boards/test1"));
     }
 }

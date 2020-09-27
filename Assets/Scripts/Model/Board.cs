@@ -4,12 +4,17 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using System;
 
+[Serializable]
 public class Board
 {
 	// Peces
+	[SerializeField]
 	private Dictionary<(int, int, int), Piece> placedPieces;
+	[SerializeField]
 	private List<Piece> notPlacedPieces;
+	[SerializeField]
 	private int turns;
 
 	public Board()
@@ -165,6 +170,11 @@ public class Board
 		}
 	}
 
+	public void SpiderMovements(Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements)
+	{ 
+		
+	}
+
 	public void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements)
 	{
 		for (int i = 0; i < neighbors.Length; i++)
@@ -180,13 +190,18 @@ public class Board
 
 	public Position[] OuterPerimeter()
 	{
-		// TODO
-		return null;
+		KeyValuePair<(int, int, int), Piece> leftMostPiece = placedPieces.First();
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			if (pair.Key.Item2 < leftMostPiece.Key.Item2)
+				leftMostPiece = pair;
+		}
+		return Perimeter(GetSurrounding(new Position(leftMostPiece.Key.Item1, leftMostPiece.Key.Item2, leftMostPiece.Key.Item3), 3));
 	}
 
-	public Position[] Perimeter(Piece piece)
+	public Position[] Perimeter(Position start)
 	{
-		// TODO
+		
 		return null;
 	}
 
@@ -199,6 +214,7 @@ public class Board
 		if (notPlacedPieces.Remove(piece))
 		{
 			placedPieces.Add(position, piece);
+			piece.SetPosition(position);
 			return true;
 		}
 		else
@@ -206,6 +222,7 @@ public class Board
 			Position oldPos = GetPiecePosition(piece);
 			placedPieces.Remove((oldPos.x, oldPos.y, oldPos.z));
 			placedPieces.Add(position, piece);
+			piece.SetPosition(position);
 		}
 
 		// TODO FALTA SEGUIR
@@ -215,10 +232,7 @@ public class Board
 
 	public Position GetPiecePosition(Piece piece)
 	{
-		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
-			if (EqualityComparer<Piece>.Default.Equals(pair.Value, piece))
-				return new Position(pair.Key.Item1, pair.Key.Item2, pair.Key.Item3);
-		return null;
+		return piece.position;
 	}
 
 	private Position[] GetNeighbors(Piece piece)
