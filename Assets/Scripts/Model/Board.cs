@@ -31,28 +31,6 @@ public class Board
 		notPlacedPieces.Clear();
 		placedPieces.Clear();
 		turns = 0;
-		notPlacedPieces.Add(new Piece(false, BugType.Queen, 0));
-		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 3));
-		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 4));
-		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 0));
-		notPlacedPieces.Add(new Piece(false, BugType.Beetle, 1));
-		notPlacedPieces.Add(new Piece(false, BugType.Grasshopper, 0));
-		notPlacedPieces.Add(new Piece(false, BugType.Grasshopper, 1));
-		notPlacedPieces.Add(new Piece(false, BugType.Grasshopper, 2));
-		notPlacedPieces.Add(new Piece(false, BugType.Ant, 0));
-		notPlacedPieces.Add(new Piece(false, BugType.Ant, 1));
-		notPlacedPieces.Add(new Piece(false, BugType.Ant, 2));
-		notPlacedPieces.Add(new Piece(true, BugType.Queen, 0));
-		notPlacedPieces.Add(new Piece(true, BugType.Spider, 0));
-		notPlacedPieces.Add(new Piece(true, BugType.Spider, 1));
-		notPlacedPieces.Add(new Piece(true, BugType.Beetle, 0));
-		notPlacedPieces.Add(new Piece(true, BugType.Beetle, 1));
-		notPlacedPieces.Add(new Piece(true, BugType.Grasshopper, 0));
-		notPlacedPieces.Add(new Piece(true, BugType.Grasshopper, 1));
-		notPlacedPieces.Add(new Piece(true, BugType.Grasshopper, 2));
-		notPlacedPieces.Add(new Piece(true, BugType.Ant, 0));
-		notPlacedPieces.Add(new Piece(true, BugType.Ant, 1));
-		notPlacedPieces.Add(new Piece(true, BugType.Ant, 2));
 	}
 
 	public Dictionary<(int, int, int), Piece> GetPlacedPieces()
@@ -121,7 +99,7 @@ public class Board
 					SlidePositions(surroundings, neighbors, ref movements);
 					break;
 				case BugType.Spider:
-					// TODO
+					SpiderMovements(pos, pos, surroundings, neighbors, ref movements);
 					break;
 				case BugType.Beetle:
 					BeetleMovements(pos, surroundings, neighbors, ref movements);
@@ -177,13 +155,33 @@ public class Board
 		}
 	}
 
-	public void SpiderMovements(Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements)
-	{ 
-		
+	public void SpiderMovements(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i=0, Position lastPos=null)
+	{
+		i++;
+		if (i == 4)
+		{
+			movements.Add(pos);
+			return;
+		}
+		List<Position> slidePositions = new List<Position>();
+		SlidePositions(surroundings, neighbors, ref slidePositions, origin);
+		foreach (Position dir in slidePositions)
+		{
+			if (dir.Equals(lastPos))
+			{
+				continue;
+			}
+			SpiderMovements(origin, dir, GetSurroundings(dir), GetNeighbors(dir), ref movements, i, pos);
+		}
 	}
 
-	public void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements)
+	public void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements, Position ignorePos = null)
 	{
+		if (ignorePos != null)
+			for (int i = 0; i < neighbors.Length; i++)
+				if (ignorePos.Equals(neighbors[i]))
+					neighbors[i] = null;
+
 		for (int i = 0; i < neighbors.Length; i++)
 		{
 			if (neighbors[i] != null)
