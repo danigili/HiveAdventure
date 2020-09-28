@@ -84,9 +84,15 @@ public class BoardView : MonoBehaviour
     public void ClickDown(PieceObject piece)
     {
         List<Position> positions = model.GetMovements(piece.piece);
-        selectedPiece = piece;
+        
         foreach (GameObject m in markers)
             m.SetActive(false);
+        if (piece.Equals(selectedPiece))
+        {
+            selectedPiece = null;
+            return;
+        }
+        selectedPiece = piece;
         for (int i = 0; i <positions.Count; i++)
         {
             if (markers.Count > i && !markers[i].activeSelf)
@@ -110,5 +116,6 @@ public class BoardView : MonoBehaviour
         selectedPiece.SetHexPosition(newPos.x, newPos.y, newPos.z);
         foreach (GameObject m in markers)
             m.SetActive(false);
+        selectedPiece = null;
     }
 }
