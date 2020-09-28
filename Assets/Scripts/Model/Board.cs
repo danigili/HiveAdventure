@@ -65,6 +65,13 @@ public class Board
 		return notPlacedPieces;
 	}
 
+	public Piece GetPiece(Position pos)
+	{
+		if (placedPieces.ContainsKey((pos.x, pos.y, pos.z)))
+			return placedPieces[(pos.x, pos.y, pos.z)];
+		return null;
+	}
+
 	public Board[] GetAllMovements(bool side)
 	{
 		//TODO
