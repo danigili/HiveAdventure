@@ -59,7 +59,8 @@ public class BoardView : MonoBehaviour
 
     public void PruobaMove()
     {
-        Debug.Log(BoardSerialization.ToJson(model));
+        //Debug.Log(BoardSerialization.ToJson(model));
+        Debug.LogError(model.CheckEndCondition());
     }
 
     public void UpdatePositions()

@@ -6,6 +6,14 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using System;
 
+public enum Winner
+{
+	None,
+	White,
+	Black,
+	Draw
+}
+
 [Serializable]
 public class Board
 {
@@ -35,12 +43,40 @@ public class Board
 
 	public Dictionary<(int, int, int), Piece> GetPlacedPieces()
 	{
-		 return placedPieces;
+		return placedPieces;
 	}
 
 	public List<Piece> GetNotPlacedPieces()
 	{
 		return notPlacedPieces;
+	}
+
+	public Winner CheckEndCondition()
+	{
+		bool whiteLoses = false;
+		bool blackLoses = false;
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			if (pair.Value.type == BugType.Queen)
+			{
+				if (!GetNeighbors(pair.Value.position).Contains(null))
+				{
+					if (pair.Value.side)
+						blackLoses = true;
+					else
+						whiteLoses = true;
+				}
+			}
+		}
+		if (!blackLoses && !whiteLoses)
+			return Winner.None;
+		if (blackLoses && whiteLoses)
+			return Winner.Draw;
+		if (blackLoses && !whiteLoses)
+			return Winner.White;
+		if (!blackLoses && whiteLoses)
+			return Winner.Black;
+		return Winner.None;
 	}
 
 	public Piece GetPiece(Position pos)
@@ -115,12 +151,12 @@ public class Board
 					}
 					break;
 				case BugType.Ant:
-					// TODO
+					Perimeter(pos, pos, surroundings, neighbors, ref movements);
 					break;
 			}
 		}
-
-		return movements;
+		//Remove duplicates
+		return movements.Distinct().ToList();
 	}
 
 	public void BeetleMovements(Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements)
@@ -193,7 +229,7 @@ public class Board
 		}
 	}
 
-	public Position[] OuterPerimeter()
+	public void OuterPerimeter(ref List<Position> movements)
 	{
 		KeyValuePair<(int, int, int), Piece> leftMostPiece = placedPieces.First();
 		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
@@ -201,13 +237,28 @@ public class Board
 			if (pair.Key.Item2 < leftMostPiece.Key.Item2)
 				leftMostPiece = pair;
 		}
-		return Perimeter(GetSurrounding(new Position(leftMostPiece.Key.Item1, leftMostPiece.Key.Item2, leftMostPiece.Key.Item3), 3));
+		Perimeter(leftMostPiece.Value.position, leftMostPiece.Value.position, GetSurroundings(leftMostPiece.Value.position), GetNeighbors(leftMostPiece.Value.position), ref movements);
 	}
 
-	public Position[] Perimeter(Position start)
+	public void Perimeter(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i = 0, Position lastPos = null)
 	{
-		
-		return null;
+		i++;
+		if (movements.Contains(pos))
+		{
+			return;
+		}
+		if (i != 0)
+			movements.Add(pos);
+		List<Position> slidePositions = new List<Position>();
+		SlidePositions(surroundings, neighbors, ref slidePositions, origin);
+		foreach (Position dir in slidePositions)
+		{
+			if (dir.Equals(lastPos))
+			{
+				continue;
+			}
+			Perimeter(origin, dir, GetSurroundings(dir), GetNeighbors(dir), ref movements, i, pos);
+		}
 	}
 
 	public bool MovePiece(Piece piece, (int, int, int) position)
@@ -343,7 +394,7 @@ public class Board
 			}
 			i++;
 		}
-		if (set.Count + 1 + beetlesOnTop == placedPieces.Count) //TODO: FALTA TENIR EN COMPTE LA TERCERA DIMENSIÓ
+		if (set.Count + 1 + beetlesOnTop == placedPieces.Count) 
 			return false;
 		return true;
 	}
