@@ -118,7 +118,7 @@ public class Board
 		if (pos == null)
 		// La peça no està en joc, totes tenen el mateix comportament independentment del tipus d'insecte
 		{
-			
+			PlacePieceMovement(ref movements, piece.side);
 		}
 		else
 		// La peça està en joc, cada insecte te un comportament diferent
@@ -159,7 +159,7 @@ public class Board
 		return movements.Distinct().ToList();
 	}
 
-	public void BeetleMovements(Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements)
+	private void BeetleMovements(Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements)
 	{
 		Position downPos = new Position(pos.x, pos.y, pos.z-1);
 
@@ -191,7 +191,7 @@ public class Board
 		}
 	}
 
-	public void SpiderMovements(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i=0, Position lastPos=null)
+	private void SpiderMovements(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i=0, Position lastPos=null)
 	{
 		i++;
 		if (i == 4)
@@ -211,7 +211,7 @@ public class Board
 		}
 	}
 
-	public void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements, Position ignorePos = null)
+	private void SlidePositions(Position[] surroundings, Position[] neighbors, ref List<Position> movements, Position ignorePos = null)
 	{
 		if (ignorePos != null)
 			for (int i = 0; i < neighbors.Length; i++)
@@ -229,7 +229,25 @@ public class Board
 		}
 	}
 
-	public void OuterPerimeter(ref List<Position> movements)
+	public void PlacePieceMovement(ref List<Position> movements, bool side)
+	{
+		//TODO BEETLE
+		// TODO HAY UNA POS QUE NO LA MARCA
+		OuterPerimeter(ref movements);
+		for (int i = movements.Count - 1; i >= 0; i--)
+		{
+			foreach (Position pos in GetNeighbors(movements[i]))
+			{
+				if (pos != null && placedPieces[(pos.x, pos.y, pos.z)].side != side)
+				{
+					movements.RemoveAt(i);
+					break;
+				}
+			}
+		}
+	}
+
+	private void OuterPerimeter(ref List<Position> movements)
 	{
 		KeyValuePair<(int, int, int), Piece> leftMostPiece = placedPieces.First();
 		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
@@ -240,7 +258,7 @@ public class Board
 		Perimeter(leftMostPiece.Value.position, leftMostPiece.Value.position, GetSurroundings(leftMostPiece.Value.position), GetNeighbors(leftMostPiece.Value.position), ref movements);
 	}
 
-	public void Perimeter(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i = 0, Position lastPos = null)
+	private void Perimeter(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i = 0, Position lastPos = null)
 	{
 		i++;
 		if (movements.Contains(pos))
