@@ -152,6 +152,7 @@ public class Board
 					break;
 				case BugType.Ant:
 					Perimeter(pos, pos, surroundings, neighbors, ref movements);
+					movements.Remove(pos);
 					break;
 			}
 		}
