@@ -13,6 +13,7 @@ public class BoardView : MonoBehaviour
     public List<PieceObject> pieces;
     public PieceObject selectedPiece;
     public PiecesPanel panel1;
+    public PiecesPanel panel2;
 
     public List<GameObject> markers = new List<GameObject>();
 
@@ -56,6 +57,7 @@ public class BoardView : MonoBehaviour
             instance.GetComponent<PieceObject>().y = -2;
         }*/
         panel1.Initialize(model);
+        panel2.Initialize(model);
     }
 
     public void PruobaMove()

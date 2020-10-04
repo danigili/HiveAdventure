@@ -7,10 +7,11 @@ public class PiecesPanel : MonoBehaviour
 {
     private float xMargin = 20;
     private float yMargin = 105;
+    private float yPanelMargin = 110;
     public RectTransform StartPosition;
     public bool side;
     private Board model;
-
+    private float lastPos = 0;
     public void Initialize(Board model)
     {
         this.model = model;
@@ -49,7 +50,8 @@ public class PiecesPanel : MonoBehaviour
                 instance = Instantiate((GameObject)Resources.Load("Prefabs/PieceUI"), child);
                 instance.GetComponent<PieceUI>().Initialize(piece);
                 pos.x = StartPosition.anchoredPosition.x;
-                pos.y = child.GetChild(child.childCount - 2).GetComponent<RectTransform>().anchoredPosition.y - yMargin;
+                pos.y = lastPos - yMargin;
+                lastPos = pos.y;
                 instance.GetComponent<RectTransform>().anchoredPosition = pos;
             }
             else
@@ -59,9 +61,21 @@ public class PiecesPanel : MonoBehaviour
                 instance.GetComponent<PieceUI>().Initialize(piece);
                 pos.x = StartPosition.anchoredPosition.x;
                 pos.y = StartPosition.anchoredPosition.y;
+                lastPos = pos.y;
                 instance.GetComponent<RectTransform>().anchoredPosition = pos;
             }
         }
+        Vector2 panelPos = transform.GetComponent<RectTransform>().anchoredPosition;
+        panelPos.y = Hieght();
+        transform.GetComponent<RectTransform>().anchoredPosition = panelPos;
     }
 
+    private float Hieght()
+    {
+        float hieght = -transform.GetChild(0).GetChild(transform.GetChild(0).childCount - 1).GetComponent<RectTransform>().anchoredPosition.y + yPanelMargin;
+        if (side)
+            return -hieght;
+        else
+            return hieght;
+    }
 }
