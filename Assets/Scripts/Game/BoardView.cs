@@ -12,6 +12,7 @@ public class BoardView : MonoBehaviour
     private Board model;
     public List<PieceObject> pieces;
     public PieceObject selectedPiece;
+    public PiecesPanel panel1;
 
     public List<GameObject> markers = new List<GameObject>();
 
@@ -38,7 +39,7 @@ public class BoardView : MonoBehaviour
         this.model = board;
         Dictionary<(int, int, int), Piece>  placedPieces = model.GetPlacedPieces();
         List<Piece> notPlacedPieces = model.GetNotPlacedPieces();
-        bool hola = true;
+
         foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
         {
             GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
@@ -54,7 +55,7 @@ public class BoardView : MonoBehaviour
             instance.GetComponent<PieceObject>().x = -2;
             instance.GetComponent<PieceObject>().y = -2;
         }*/
-
+        panel1.Initialize(model);
     }
 
     public void PruobaMove()
@@ -77,6 +78,11 @@ public class BoardView : MonoBehaviour
                 markers.Add(instance);
             }
         }
+    }
+
+    public void Prueba2()
+    {
+        Debug.Log(BoardSerialization.ToJson(model));
     }
 
     public void UpdatePositions()
