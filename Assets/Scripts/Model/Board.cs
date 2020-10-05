@@ -24,6 +24,11 @@ public class Board
 	private List<Piece> notPlacedPieces;
 	[SerializeField]
 	private int turns;
+	
+	[NonSerialized]
+	private bool queen1Placed = false;
+	[NonSerialized]
+	private bool queen2Placed = false;
 
 	public Board()
 	{
@@ -32,13 +37,23 @@ public class Board
 		Initialize();
 	}
 
-	// Afegeix les peces del joc
 	public void Initialize()
 	{
-		//TODO: FALTA OPTIMITZAR
-		notPlacedPieces.Clear();
-		placedPieces.Clear();
-		turns = 0;
+		FindQueens();
+	}
+
+	private void FindQueens()
+	{
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			if (pair.Value.type == BugType.Queen)
+			{
+				if (!pair.Value.side)
+					queen1Placed = true;
+				else
+					queen2Placed = true;
+			}
+		}
 	}
 
 	public Dictionary<(int, int, int), Piece> GetPlacedPieces()
@@ -110,11 +125,29 @@ public class Board
 
 	public List<Position> GetMovements(Piece piece)
 	{
-		//TODO: FALTA COMPROBAR QUE SI ES EL QUART TORN, NOMÉS ES POT MOURE LA REINA
-
-		//TODO
 		List<Position> movements = new List<Position>();
 		Position pos = GetPiecePosition(piece);
+
+		bool queenPlaced = piece.side ? queen2Placed : queen1Placed;
+
+		if (!queenPlaced && piece.type != BugType.Queen && (turns >= 6))
+			return movements;
+
+		if (turns == 0)
+		{
+			movements.Add(new Position(0, 0, 0));
+			return movements;
+		}
+
+		if (turns == 1)
+		{
+			movements.AddRange(GetSurroundings(placedPieces.First().Value.position));
+			return movements;
+		}
+
+		if (pos != null && !queenPlaced)
+			return movements;
+
 		if (pos == null)
 		// La peça no està en joc, totes tenen el mateix comportament independentment del tipus d'insecte
 		{
@@ -291,7 +324,6 @@ public class Board
 		{
 			placedPieces.Add(position, piece);
 			piece.SetPosition(position);
-			return true;
 		}
 		else
 		{
@@ -300,10 +332,10 @@ public class Board
 			placedPieces.Add(position, piece);
 			piece.SetPosition(position);
 		}
+		turns++;
+		FindQueens();
 
-		// TODO FALTA SEGUIR
-
-		return false;
+		return true;
 	}
 
 	public Position GetPiecePosition(Piece piece)

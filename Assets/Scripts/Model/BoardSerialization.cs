@@ -10,6 +10,7 @@ public class BoardSerialization
         fsData data = fsJsonParser.Parse(json);
         object deserialized = null;
         serializer.TryDeserialize(data, typeof(Board), ref deserialized).AssertSuccessWithoutWarnings();
+        ((Board)deserialized).Initialize();
         return (Board)deserialized;
     }
 
