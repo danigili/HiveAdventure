@@ -119,8 +119,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: 426e7949e185d3445990a3cc8afa81d6, type: 3}
-        m_MethodName: 
+      - m_Target: {fileID: 3046213310794618815}
+        m_MethodName: Click
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -142,3 +142,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 426e7949e185d3445990a3cc8afa81d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  piece:
+    side: 0
+    type: 0
+    number: 0
+    position:
+      x: 0
+      y: 0
+      z: 0

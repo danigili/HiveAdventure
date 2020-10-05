@@ -12,6 +12,7 @@ public class BoardView : MonoBehaviour
     private Board model;
     public List<PieceObject> pieces;
     public PieceObject selectedPiece;
+    public PieceUI selectedUIPiece;
     public PiecesPanel panel1;
     public PiecesPanel panel2;
 
@@ -19,15 +20,7 @@ public class BoardView : MonoBehaviour
 
     void Start()
     {
-        /*for (int i = -5; i < 5; i++)
-        {
-            for (int j = -5; j < 5; j++)
-            {
-                GameObject instance = Instantiate(piecePrefab, this.transform);
-                instance.GetComponent<PieceObject>().x = i;
-                instance.GetComponent<PieceObject>().y = j;
-            }
-        }*/
+
     }
 
     void Update()
@@ -49,16 +42,12 @@ public class BoardView : MonoBehaviour
             instance.GetComponent<PieceObject>().y = pair.Key.Item2;
             instance.GetComponent<PieceObject>().z = pair.Key.Item3;
         }
-        /*foreach (Piece p in notPlacedPieces)
-        {
-            GameObject instance = Instantiate(piecePrefab, transform); //TODO: PONER EN UNA SOLA LINEA
-            instance.GetComponent<PieceObject>().piece = p;
-            instance.GetComponent<PieceObject>().x = -2;
-            instance.GetComponent<PieceObject>().y = -2;
-        }*/
-        panel1.Initialize(model);
-        panel2.Initialize(model);
+
+        panel1.Initialize(model, ClickPanelPiece);
+        panel2.Initialize(model, ClickPanelPiece);
     }
+
+
 
     public void PruobaMove()
     {
@@ -106,6 +95,35 @@ public class BoardView : MonoBehaviour
 
     }
 
+    public void ClickPanelPiece(PieceUI piece)
+    {
+        List<Position> positions = model.GetMovements(piece.piece);
+
+        foreach (GameObject m in markers)
+            m.SetActive(false);
+        if (piece.Equals(selectedUIPiece))
+        {
+            selectedUIPiece = null;
+            return;
+        }
+        selectedPiece = null;
+        selectedUIPiece = piece;
+        for (int i = 0; i < positions.Count; i++)
+        {
+            if (markers.Count > i && !markers[i].activeSelf)
+            {
+                markers[i].GetComponent<Marker>().SetHexPosition(positions[i].x, positions[i].y, positions[i].z);
+                markers[i].SetActive(true);
+            }
+            else
+            {
+                GameObject instance = Instantiate(markerPrefab, transform); //TODO: PONER EN UNA SOLA LINEA
+                instance.GetComponent<Marker>().SetHexPosition(positions[i].x, positions[i].y, positions[i].z);
+                markers.Add(instance);
+            }
+        }
+    }
+
     public void ClickDown(PieceObject piece)
     {
         List<Position> positions = model.GetMovements(piece.piece);
@@ -118,6 +136,7 @@ public class BoardView : MonoBehaviour
             return;
         }
         selectedPiece = piece;
+        selectedUIPiece = null;
         for (int i = 0; i <positions.Count; i++)
         {
             if (markers.Count > i && !markers[i].activeSelf)
@@ -136,11 +155,26 @@ public class BoardView : MonoBehaviour
 
     public void ClickDownMarker(Marker marker)
     {
-        model.MovePiece(selectedPiece.piece, (marker.x, marker.y, marker.z));
-        Position newPos = model.GetPiecePosition(selectedPiece.piece);
-        selectedPiece.SetHexPosition(newPos.x, newPos.y, newPos.z);
+        if (selectedPiece != null)
+        {
+            model.MovePiece(selectedPiece.piece, (marker.x, marker.y, marker.z));
+            Position newPos = model.GetPiecePosition(selectedPiece.piece);
+            selectedPiece.SetHexPosition(newPos.x, newPos.y, newPos.z);
+            selectedPiece = null;
+        }
+        else if (selectedUIPiece != null)
+        {
+            selectedUIPiece.Remove();
+            model.MovePiece(selectedUIPiece.piece, (marker.x, marker.y, marker.z));
+            Position newPos = model.GetPiecePosition(selectedUIPiece.piece);
+            GameObject instance = Instantiate(piecePrefab, transform);
+            instance.GetComponent<PieceObject>().Initialize(selectedUIPiece.piece);
+            instance.GetComponent<PieceObject>().x = selectedUIPiece.piece.position.x;
+            instance.GetComponent<PieceObject>().y = selectedUIPiece.piece.position.y;
+            instance.GetComponent<PieceObject>().z = selectedUIPiece.piece.position.z;
+            selectedUIPiece = null;
+        }
         foreach (GameObject m in markers)
             m.SetActive(false);
-        selectedPiece = null;
     }
 }
