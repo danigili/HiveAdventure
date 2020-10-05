@@ -232,14 +232,14 @@ public class Board
 
 	public void PlacePieceMovement(ref List<Position> movements, bool side)
 	{
-		//TODO BEETLE
-		// TODO HAY UNA POS QUE NO LA MARCA
 		OuterPerimeter(ref movements);
 		for (int i = movements.Count - 1; i >= 0; i--)
 		{
 			foreach (Position pos in GetNeighbors(movements[i]))
 			{
-				if (pos != null && placedPieces[(pos.x, pos.y, pos.z)].side != side)
+				int j = 1;
+				while (pos != null && placedPieces.ContainsKey((pos.x, pos.y, pos.z + j))) j++;
+				if (pos != null && placedPieces[(pos.x, pos.y, pos.z + j - 1)].side != side)
 				{
 					movements.RemoveAt(i);
 					break;
@@ -256,7 +256,8 @@ public class Board
 			if (pair.Key.Item2 < leftMostPiece.Key.Item2)
 				leftMostPiece = pair;
 		}
-		Perimeter(leftMostPiece.Value.position, leftMostPiece.Value.position, GetSurroundings(leftMostPiece.Value.position), GetNeighbors(leftMostPiece.Value.position), ref movements);
+		Position pos = GetSurrounding(leftMostPiece.Value.position, 3);
+		Perimeter(pos, pos, GetSurroundings(leftMostPiece.Value.position), GetNeighbors(leftMostPiece.Value.position), ref movements);
 	}
 
 	private void Perimeter(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i = 0, Position lastPos = null)
