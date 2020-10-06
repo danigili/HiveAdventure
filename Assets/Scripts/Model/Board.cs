@@ -19,7 +19,7 @@ public class Board
 {
 	// Peces
 	[SerializeField]
-	private Dictionary<(int, int, int), Piece> placedPieces;
+	private DualDictionary<(int, int, int), Piece> placedPieces;
 	[SerializeField]
 	private List<Piece> notPlacedPieces;
 	[SerializeField]
@@ -32,7 +32,7 @@ public class Board
 
 	public Board()
 	{
-		placedPieces = new Dictionary<(int, int, int), Piece>();
+		placedPieces = new DualDictionary<(int, int, int), Piece>();
 		notPlacedPieces = new List<Piece>();
 		Initialize();
 	}
@@ -40,7 +40,6 @@ public class Board
 	public void Initialize()
 	{
 		FindQueens();
-		ComputePiecePositions();
 	}
 
 	private void FindQueens()
@@ -55,12 +54,6 @@ public class Board
 					queen2Placed = true;
 			}
 		}
-	}
-
-	private void ComputePiecePositions()
-	{
-		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
-			pair.Value.SetPosition(pair.Key);
 	}
 
 	public Dictionary<(int, int, int), Piece> GetPlacedPieces()
@@ -81,7 +74,7 @@ public class Board
 		{
 			if (pair.Value.type == BugType.Queen)
 			{
-				if (!GetNeighbors(pair.Value.position).Contains(null))
+				if (!GetNeighbors(GetPiecePosition(pair.Value)).Contains(null))
 				{
 					if (pair.Value.side)
 						blackLoses = true;
@@ -157,7 +150,7 @@ public class Board
 
 		if (turns == 1)
 		{
-			movements.AddRange(GetSurroundings(placedPieces.First().Value.position));
+			movements.AddRange(GetSurroundings(GetPiecePosition(placedPieces.First().Value)));
 			return movements;
 		}
 
@@ -305,8 +298,8 @@ public class Board
 			if (pair.Key.Item2 < leftMostPiece.Key.Item2)
 				leftMostPiece = pair;
 		}
-		Position pos = GetSurrounding(leftMostPiece.Value.position, 3);
-		Perimeter(pos, pos, GetSurroundings(leftMostPiece.Value.position), GetNeighbors(leftMostPiece.Value.position), ref movements);
+		Position pos = GetSurrounding(GetPiecePosition(leftMostPiece.Value), 3);
+		Perimeter(pos, pos, GetSurroundings(GetPiecePosition(leftMostPiece.Value)), GetNeighbors(GetPiecePosition(leftMostPiece.Value)), ref movements);
 	}
 
 	private void Perimeter(Position origin, Position pos, Position[] surroundings, Position[] neighbors, ref List<Position> movements, int i = 0, Position lastPos = null)
@@ -339,14 +332,12 @@ public class Board
 		if (notPlacedPieces.Remove(piece))
 		{
 			placedPieces.Add(position, piece);
-			piece.SetPosition(position);
 		}
 		else
 		{
 			Position oldPos = GetPiecePosition(piece);
 			placedPieces.Remove((oldPos.x, oldPos.y, oldPos.z));
 			placedPieces.Add(position, piece);
-			piece.SetPosition(position);
 		}
 		turns++;
 		FindQueens();
@@ -361,7 +352,12 @@ public class Board
 
 	public Position GetPiecePosition(Piece piece)
 	{
-		return piece.position;
+		if (placedPieces.ContainsValue(piece))
+		{
+			(int, int, int) p = placedPieces.getKey(piece);
+			return new Position(p.Item1, p.Item2, p.Item3);
+		}
+		return null;
 	}
 
 	private Position[] GetNeighbors(Piece piece)
@@ -470,5 +466,15 @@ public class Board
 		if (set.Count + 1 + beetlesOnTop == placedPieces.Count) 
 			return false;
 		return true;
+	}
+
+	public Board Clone()
+	{
+		Board brother = new Board();
+		brother.placedPieces = new DualDictionary<(int, int, int), Piece>(this.placedPieces);
+		brother.notPlacedPieces = new List<Piece>(this.notPlacedPieces);
+		brother.turns = this.turns;
+		brother.Initialize();
+		return brother;
 	}
 }

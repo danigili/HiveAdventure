@@ -169,9 +169,9 @@ public class BoardView : MonoBehaviour
             Position newPos = model.GetPiecePosition(selectedUIPiece.piece);
             GameObject instance = Instantiate(piecePrefab, transform);
             instance.GetComponent<PieceObject>().Initialize(selectedUIPiece.piece);
-            instance.GetComponent<PieceObject>().x = selectedUIPiece.piece.position.x;
-            instance.GetComponent<PieceObject>().y = selectedUIPiece.piece.position.y;
-            instance.GetComponent<PieceObject>().z = selectedUIPiece.piece.position.z;
+            instance.GetComponent<PieceObject>().x = model.GetPiecePosition(selectedUIPiece.piece).x;
+            instance.GetComponent<PieceObject>().y = model.GetPiecePosition(selectedUIPiece.piece).y;
+            instance.GetComponent<PieceObject>().z = model.GetPiecePosition(selectedUIPiece.piece).z;
             selectedUIPiece = null;
         }
         foreach (GameObject m in markers)

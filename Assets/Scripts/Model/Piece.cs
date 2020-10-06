@@ -18,23 +18,12 @@ public class Piece
 	public bool side;
 	public BugType type;
 	public int number;
-	[NonSerialized]
-	public Position position;
 
 	public Piece(bool side, BugType type, int number)
 	{
 		this.side = side;
 		this.type = type;
 		this.number = number;
-		this.position = null;
-	}
-
-	public void SetPosition((int, int, int) position)
-	{
-		if (this.position == null)
-			this.position = new Position(position);
-		else
-			this.position.SetPosition(position);
 	}
 
 	public string GetBugTypeName()
