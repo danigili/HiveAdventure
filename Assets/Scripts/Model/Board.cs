@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using System;
 
@@ -110,10 +107,36 @@ public class Board
 		return null;
 	}
 
-	public Board[] GetAllMovements(bool side)
+	public List<Board> GetAllMovements(bool side)
 	{
-		//TODO
-		return null;
+		List<Board> boards = new List<Board>();
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			if (pair.Value.side != side)
+				continue;
+
+			List<Position> movements = this.GetMovements(pair.Value);
+			foreach (Position pos in movements)
+			{
+				Board newBoard = this.Clone();
+				newBoard.MovePiece(pair.Value, pos);
+				boards.Add(newBoard);
+			}
+		}
+		foreach (Piece piece in notPlacedPieces)
+		{
+			if (piece.side != side)
+				continue;
+
+			List<Position> movements = this.GetMovements(piece);
+			foreach (Position pos in movements)
+			{
+				Board newBoard = this.Clone();
+				newBoard.MovePiece(piece, pos);
+				boards.Add(newBoard);
+			}
+		}
+		return boards;
 	}
 
 	public bool IsBlocked(Piece piece)

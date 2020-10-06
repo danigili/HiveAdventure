@@ -51,24 +51,9 @@ public class BoardView : MonoBehaviour
 
     public void PruobaMove()
     {
-        List<Position> positions = new List<Position>();
-        model.PlacePieceMovement(ref positions, false);
-        foreach (GameObject m in markers)
-            m.SetActive(false);
-        for (int i = 0; i < positions.Count; i++)
-        {
-            if (markers.Count > i && !markers[i].activeSelf)
-            {
-                markers[i].GetComponent<Marker>().SetHexPosition(positions[i].x, positions[i].y, positions[i].z);
-                markers[i].SetActive(true);
-            }
-            else
-            {
-                GameObject instance = Instantiate(markerPrefab, transform); //TODO: PONER EN UNA SOLA LINEA
-                instance.GetComponent<Marker>().SetHexPosition(positions[i].x, positions[i].y, positions[i].z);
-                markers.Add(instance);
-            }
-        }
+        for (int i = 0; i < 1000; i++)
+            model.GetAllMovements(false);
+        Debug.Log(model.GetAllMovements(false).Count);
     }
 
     public void Prueba2()
