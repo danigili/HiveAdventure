@@ -43,7 +43,21 @@ namespace Tests
         [Test]
         public void WinCondition()
         {
-            // TODO
+            StreamReader reader = new StreamReader(resourcesPath + "test4.json");
+            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Piece ant1 = board.GetPiece(new Position(-1, -2, 0));
+            Piece ant2 = board.GetPiece(new Position(1, 1, 0));
+            Piece spider = board.GetPiece(new Position(1, 3, 0));
+
+            Assert.AreEqual(Winner.None, board.CheckEndCondition());
+            board.MovePiece(ant1, new Position(0, 1));
+            Assert.AreEqual(Winner.Black, board.CheckEndCondition());
+            board.MovePiece(ant2, new Position(-1, -2));
+            Assert.AreEqual(Winner.White, board.CheckEndCondition());
+            board.MovePiece(ant2, new Position(1, 1)); 
+            board.MovePiece(ant1, new Position(-1, -2));
+            board.MovePiece(spider, new Position(0, 1, 0));
+            Assert.AreEqual(Winner.Draw, board.CheckEndCondition());
         }
 
         // Test the Queen Movement
@@ -109,6 +123,48 @@ namespace Tests
             Assert.IsTrue(movements.Contains(new Position(-1, -1, 0)));
             Assert.IsTrue(movements.Contains(new Position( 0, -5, 0)));
         }
+
+        // Test the beginning of the Game
+        // - First move
+        // - Second move: next to the first piece
+        // - Can't move pieces until the Queen is placed
+        // - Must place the Queen in the fourth turn if isn't already placed (TODO)
+        [Test]
+        public void GameStart()
+        {
+            // Load an empty board
+            StreamReader reader = new StreamReader(resourcesPath + "new.json");
+            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Piece queen1 = board.GetPiece(false, BugType.Queen, 0);
+            Piece ant1 = board.GetPiece(false, BugType.Ant, 0);
+            
+            // First move
+            List<Position> m1 = board.GetMovements(ant1);
+            Assert.AreEqual(1, m1.Count);
+            Assert.AreEqual(new Position(0, 0, 0), m1[0]);
+            board.MovePiece(ant1, m1[0]);
+
+            // Second move
+            Piece ant2 = board.GetPiece(true, BugType.Ant, 0);
+            List<Position> m2 = board.GetMovements(ant2);
+            Assert.AreEqual(6, m2.Count);
+            board.MovePiece(ant2, m2[0]);
+
+            // Can't move until the queen is placed
+            Assert.AreEqual(0, board.GetMovements(ant1).Count);
+            List<Position> m3 = board.GetMovements(queen1);
+            Assert.AreEqual(3, m3.Count);
+            board.MovePiece(queen1, m3[0]);
+
+            Piece spider2 = board.GetPiece(true, BugType.Spider, 0);
+            board.MovePiece(spider2, board.GetMovements(spider2)[0]);
+
+            Piece spider1 = board.GetPiece(false, BugType.Spider, 0);
+            board.MovePiece(spider1, board.GetMovements(spider1)[4]);
+            Assert.AreEqual(2, board.GetMovements(spider1).Count);
+
+        }
+
 
     }
 }

@@ -40,6 +40,7 @@ public class Board
 	public void Initialize()
 	{
 		FindQueens();
+		ComputePiecePositions();
 	}
 
 	private void FindQueens()
@@ -54,6 +55,12 @@ public class Board
 					queen2Placed = true;
 			}
 		}
+	}
+
+	private void ComputePiecePositions()
+	{
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+			pair.Value.SetPosition(pair.Key);
 	}
 
 	public Dictionary<(int, int, int), Piece> GetPlacedPieces()
@@ -98,6 +105,15 @@ public class Board
 	{
 		if (placedPieces.ContainsKey((pos.x, pos.y, pos.z)))
 			return placedPieces[(pos.x, pos.y, pos.z)];
+		return null;
+	}
+	
+	public Piece GetPiece(bool side, BugType type, int number)
+	{
+		Piece pieceSeek = new Piece(side, type, number);
+		foreach (Piece p in notPlacedPieces)
+			if (p.Equals(pieceSeek))
+				return p;
 		return null;
 	}
 
@@ -336,6 +352,11 @@ public class Board
 		FindQueens();
 
 		return true;
+	}
+
+	public bool MovePiece(Piece piece, Position position)
+	{
+		return MovePiece(piece, (position.x, position.y, position.z));
 	}
 
 	public Position GetPiecePosition(Piece piece)

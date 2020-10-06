@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ public class Piece
 	public bool side;
 	public BugType type;
 	public int number;
+	[NonSerialized]
 	public Position position;
 
 	public Piece(bool side, BugType type, int number)
@@ -46,5 +48,19 @@ public class Piece
 			case BugType.Ant:         return "ant";
 		}
 		return "";
+	}
+	
+	public override bool Equals(object obj)
+	{
+		if (obj == null)
+			return false;
+		if (obj is Piece)
+			return this.side == ((Piece)obj).side && this.type == ((Piece)obj).type && this.number == ((Piece)obj).number;
+		return false;
+	}
+
+	public override int GetHashCode()
+	{
+		return ("" + (side ? "1" : "2") + "," + this.GetBugTypeName() + "," + number).GetHashCode();
 	}
 }
