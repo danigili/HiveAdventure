@@ -123,13 +123,21 @@ public class Board
 				boards.Add(newBoard);
 			}
 		}
+
+		List<Position> movements2 = new List<Position>();
+		PlacePieceMovement(ref movements2, side);
+		List<BugType> visitedPieces = new List<BugType>();
 		foreach (Piece piece in notPlacedPieces)
 		{
 			if (piece.side != side)
 				continue;
 
-			List<Position> movements = this.GetMovements(piece);
-			foreach (Position pos in movements)
+			if (visitedPieces.Contains(piece.type))
+				break;
+
+			visitedPieces.Add(piece.type);
+
+			foreach (Position pos in movements2)
 			{
 				Board newBoard = this.Clone();
 				newBoard.MovePiece(piece, pos);
