@@ -491,6 +491,36 @@ public class Board
 		return true;
 	}
 
+	public int EvaluateBoard()
+	{
+		int value = 0;
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			if (pair.Value.type == BugType.Queen)
+			{
+				int neighbors = 0;
+				foreach (Position p in GetNeighbors(GetPiecePosition(pair.Value)))
+					if (p!=null)
+						neighbors++; 
+				if (pair.Value.side)
+				{
+					if (neighbors == 6)
+                        value -= 1000;
+					else
+						value -= neighbors;
+				}
+				else
+				{
+					if (neighbors == 6)
+						value += 1000;
+					else
+						value += neighbors;
+				}
+			}
+		}
+		return value;
+	}
+
 	public Board Clone()
 	{
 		Board brother = new Board();
