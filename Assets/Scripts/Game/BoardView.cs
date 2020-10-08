@@ -51,14 +51,38 @@ public class BoardView : MonoBehaviour
 
     public void PruobaMove()
     {
+        DateTime inicio = DateTime.Now;
         for (int i = 0; i < 1000; i++)
-            model.GetAllMovements(false);
+            model.GetAllMovements(true);
+        Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds);
         Debug.Log(model.GetAllMovements(false).Count);
+
+        
+        
     }
 
     public void Prueba2()
     {
         Debug.Log(BoardSerialization.ToJson(model));
+        DateTime inicio = DateTime.Now;
+        for (int i = 0; i < 100000; i++)
+            model.BreaksCohesion(model.GetPlacedPieces().First().Value);
+        Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds); 
+    }
+
+    public void AIButton()
+    {
+        DateTime inicio = DateTime.Now;
+        int leaves = 0;
+        int bestValue = 0;
+        Debug.Log(BoardSerialization.ToJson(AI.FindBestMove(true, model, 0, out leaves, out bestValue)));
+        Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds);
+        Debug.Log("Leaves: " + leaves + ", Value: " + bestValue);
+    }
+
+    public void Evaluate()
+    {
+        Debug.Log(model.EvaluateBoard());
     }
 
     public void UpdatePositions()
