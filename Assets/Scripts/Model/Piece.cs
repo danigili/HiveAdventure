@@ -19,11 +19,15 @@ public class Piece
 	public BugType type;
 	public int number;
 
+	[NonSerialized]
+	public Position position;
+
 	public Piece(bool side, BugType type, int number)
 	{
 		this.side = side;
 		this.type = type;
 		this.number = number;
+		position = null;
 	}
 
 	public string GetBugTypeName()
@@ -37,6 +41,14 @@ public class Piece
 			case BugType.Ant:         return "ant";
 		}
 		return "";
+	}
+
+	public void SetPosition((int, int, int) pos)
+	{
+		if (position == null)
+			position = new Position(pos);
+		else 
+			position.SetPosition(pos);
 	}
 	
 	public override bool Equals(object obj)

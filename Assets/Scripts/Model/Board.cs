@@ -36,6 +36,11 @@ public class Board
 
 	public void Initialize()
 	{
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			pair.Value.SetPosition(pair.Key);
+		}
+
 		FindQueens();
 	}
 
@@ -363,12 +368,14 @@ public class Board
 		if (notPlacedPieces.Remove(piece))
 		{
 			placedPieces.Add(position, piece);
+			piece.SetPosition(position);
 		}
 		else
 		{
 			Position oldPos = GetPiecePosition(piece);
 			placedPieces.Remove((oldPos.x, oldPos.y, oldPos.z));
 			placedPieces.Add(position, piece);
+			piece.SetPosition(position);
 		}
 		turns++;
 		FindQueens();
@@ -383,12 +390,7 @@ public class Board
 
 	public Position GetPiecePosition(Piece piece)
 	{
-		if (placedPieces.ContainsValue(piece))
-		{
-			(int, int, int) p = placedPieces.getKey(piece);
-			return new Position(p.Item1, p.Item2, p.Item3);
-		}
-		return null;
+		return piece.position;
 	}
 
 	private Position[] GetNeighbors(Piece piece)
@@ -473,9 +475,9 @@ public class Board
 		int i = 0;
 		int beetlesOnTop = 0; // Els escarabats que estan per sobre d'altres peces no compten en el càlcul de la cohesió.
 		if (placedPieces.First().Value != piece)
-			set.Add(new Position(placedPieces.First().Key.Item1, placedPieces.First().Key.Item2));
+			set.Add(placedPieces.First().Value.position);
 		else
-			set.Add(new Position(placedPieces.Last().Key.Item1, placedPieces.Last().Key.Item2));
+			set.Add(placedPieces.First().Value.position);
 		while (i < placedPieces.Count && i < set.Count)
 		{
 			if (!piecePos.Equals(set[i]))
