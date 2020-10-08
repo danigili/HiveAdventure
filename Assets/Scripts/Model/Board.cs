@@ -16,7 +16,7 @@ public class Board
 {
 	// Peces
 	[SerializeField]
-	private DualDictionary<(int, int, int), Piece> placedPieces;
+	private Dictionary<(int, int, int), Piece> placedPieces;
 	[SerializeField]
 	private List<Piece> notPlacedPieces;
 	[SerializeField]
@@ -102,7 +102,15 @@ public class Board
 			return placedPieces[(pos.x, pos.y, pos.z)];
 		return null;
 	}
-	
+
+	public Piece GetPiece(int x, int y, int z)
+	{
+		Piece piece;
+		if (placedPieces.TryGetValue((x, y, z), out piece))
+			return piece;
+		return null;
+	}
+
 	public Piece GetPiece(bool side, BugType type, int number)
 	{
 		Piece pieceSeek = new Piece(side, type, number);
@@ -390,7 +398,9 @@ public class Board
 
 	public Position GetPiecePosition(Piece piece)
 	{
-		return piece.position;
+		if (piece != null)
+			return piece.position;
+		return null;
 	}
 
 	private Position[] GetNeighbors(Piece piece)
@@ -400,6 +410,7 @@ public class Board
 		return GetNeighbors(pos);
 	}
 
+
 	private Position[] GetNeighbors(Position pos)
 	{
 		Position[] neighbors = GetSurroundings(pos);
@@ -407,6 +418,57 @@ public class Board
 			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y, neighbors[i].z)))
 				neighbors[i] = null;
 		return neighbors;
+	}
+
+	private void GetNeighbors(Position pos, ref Position[] neighbors)
+	{
+		if (pos.y % 2 == 0)
+		{
+			neighbors[0] = GetPiecePosition(GetPiece(pos.x, pos.y + 2, pos.z));
+			neighbors[1] = GetPiecePosition(GetPiece(pos.x + 1, pos.y + 1, pos.z));
+			neighbors[2] = GetPiecePosition(GetPiece(pos.x + 1, pos.y - 1, pos.z));
+			neighbors[3] = GetPiecePosition(GetPiece(pos.x, pos.y - 2, pos.z));
+			neighbors[4] = GetPiecePosition(GetPiece(pos.x, pos.y - 1, pos.z));
+			neighbors[5] = GetPiecePosition(GetPiece(pos.x, pos.y + 1, pos.z));
+		}
+		else
+		{
+			neighbors[0] = GetPiecePosition(GetPiece(pos.x, pos.y + 2, pos.z));
+			neighbors[1] = GetPiecePosition(GetPiece(pos.x, pos.y + 1, pos.z));
+			neighbors[2] = GetPiecePosition(GetPiece(pos.x, pos.y - 1, pos.z));
+			neighbors[3] = GetPiecePosition(GetPiece(pos.x, pos.y - 2, pos.z));
+			neighbors[4] = GetPiecePosition(GetPiece(pos.x - 1, pos.y - 1, pos.z));
+			neighbors[5] = GetPiecePosition(GetPiece(pos.x - 1, pos.y + 1, pos.z));
+		}
+	}
+
+	private Position GetNeighbor(Position pos, int direction)
+	{
+		if (pos.y % 2 == 0)
+		{
+			switch (direction)
+			{
+				case 0: return GetPiecePosition(GetPiece(pos.x, pos.y + 2, pos.z));
+				case 1: return GetPiecePosition(GetPiece(pos.x + 1, pos.y + 1, pos.z));
+				case 2: return GetPiecePosition(GetPiece(pos.x + 1, pos.y - 1, pos.z));
+				case 3: return GetPiecePosition(GetPiece(pos.x, pos.y - 2, pos.z));
+				case 4: return GetPiecePosition(GetPiece(pos.x, pos.y - 1, pos.z));
+				case 5: return GetPiecePosition(GetPiece(pos.x, pos.y + 1, pos.z));
+			}
+		}
+		else
+		{
+			switch (direction)
+			{
+				case 0: return GetPiecePosition(GetPiece(pos.x, pos.y + 2, pos.z));
+				case 1: return GetPiecePosition(GetPiece(pos.x, pos.y + 1, pos.z));
+				case 2: return GetPiecePosition(GetPiece(pos.x, pos.y - 1, pos.z));
+				case 3: return GetPiecePosition(GetPiece(pos.x, pos.y - 2, pos.z));
+				case 4: return GetPiecePosition(GetPiece(pos.x - 1, pos.y - 1, pos.z));
+				case 5: return GetPiecePosition(GetPiece(pos.x - 1, pos.y + 1, pos.z));
+			}
+		}
+		return null;
 	}
 
 	public Position[] GetSurroundings(Position pos)
@@ -462,32 +524,45 @@ public class Board
 		return null;
 	}
 
+	private Position[] cohesionNeighbors = new Position[6];
+	private Position[] cohesionSet = new Position[40];
 	public bool BreaksCohesion(Piece piece)
 	{
 		// Aquest mètode indica si la peça indicada trenca la cohesió del rusc, i per tant, no es pot moure
 		// Ho fa de la següent manera: s'afegeix una peça en un set sense repeticions, per cada element del set
 		// s'obtenen els seus veïns i s'afegeixen el set. Mai s'inclou la peça indicada al set.
 		// Si la longitud final del set és igual al nombre de peces -1, significa que totes les peces son adjacents entre elles.
-		List<Position> set = new List<Position>(); //TODO: FALTA OPTIMITZAR AMB ESTRUCTURA DE DADES PROPIA
+		//List<Position> set = new List<Position>(); //TODO: FALTA OPTIMITZAR AMB ESTRUCTURA DE DADES PROPIA
 		Position piecePos = GetPiecePosition(piece);
+		int cohesionCount = 1;
 		if (piecePos.z != 0) // Els escarabats no poden trencar la cohesió
 			return false;
 		int i = 0;
 		int beetlesOnTop = 0; // Els escarabats que estan per sobre d'altres peces no compten en el càlcul de la cohesió.
 		if (placedPieces.First().Value != piece)
-			set.Add(placedPieces.First().Value.position);
+			cohesionSet[0]=placedPieces.First().Value.position;
 		else
-			set.Add(placedPieces.First().Value.position);
-		while (i < placedPieces.Count && i < set.Count)
+			cohesionSet[0]=placedPieces.Last().Value.position;
+		while (i < placedPieces.Count && i < cohesionCount)
 		{
-			if (!piecePos.Equals(set[i]))
+			if (!piecePos.Equals(cohesionSet[i]))
 			{
-				Position[] neighbors = GetNeighbors(set[i]);
-				foreach (Position p in neighbors)
-					if (p!=null && !p.Equals(piecePos) && !set.Contains(p))
-						set.Add(p);
+				GetNeighbors(cohesionSet[i], ref cohesionNeighbors);
+				foreach (Position p in cohesionNeighbors)
+					if (p != null && !p.Equals(piecePos))
+					{
+						bool found = false;
+						for (int l = 0; l < cohesionCount; l++)
+							if (cohesionSet[l].Equals(p))
+								found = true;
+						if (!found)
+						{
+							cohesionSet[cohesionCount] = p;
+							cohesionCount++;
+						}
+					}
 				int j = 1;
-				while (placedPieces.ContainsKey((set[i].x, set[i].y, set[i].z + j)))
+				while (placedPieces.ContainsKey((cohesionSet[i].x, cohesionSet[i].y, cohesionSet[i].z + j)))
 				{ 
 					beetlesOnTop++;
 					j++;
@@ -496,7 +571,7 @@ public class Board
 			}
 			i++;
 		}
-		if (set.Count + 1 + beetlesOnTop == placedPieces.Count) 
+		if (cohesionCount + 1 + beetlesOnTop == placedPieces.Count) 
 			return false;
 		return true;
 	}
@@ -534,7 +609,7 @@ public class Board
 	public Board Clone()
 	{
 		Board brother = new Board();
-		brother.placedPieces = new DualDictionary<(int, int, int), Piece>(this.placedPieces);
+		brother.placedPieces = new Dictionary<(int, int, int), Piece>(this.placedPieces);
 		brother.notPlacedPieces = new List<Piece>(this.notPlacedPieces);
 		brother.turns = this.turns;
 		brother.Initialize();
