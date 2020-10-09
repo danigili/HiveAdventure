@@ -37,10 +37,9 @@ public class Board
 	public void Initialize()
 	{
 		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
-		{
 			pair.Value.SetPosition(pair.Key);
-		}
-
+		foreach (Piece p in notPlacedPieces)
+			p.position = null;
 		FindQueens();
 	}
 
@@ -120,25 +119,34 @@ public class Board
 		return null;
 	}
 
-	public List<Board> GetAllMovements(bool side)
+	public List<Move> GetAllMovements(bool side)
 	{
-		List<Board> boards = new List<Board>();
-		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
-		{
-			if (pair.Value.side != side)
-				continue;
+		Initialize();
+		bool queenPlaced = side ? queen2Placed : queen1Placed;
 
-			List<Position> movements = this.GetMovements(pair.Value);
-			foreach (Position pos in movements)
+		List<Move> boards = new List<Move>();
+
+		if (queenPlaced)
+		{
+			foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
 			{
-				Board newBoard = this.Clone();
-				newBoard.MovePiece(pair.Value, pos);
-				boards.Add(newBoard);
+				if (pair.Value.side != side)
+					continue;
+
+				List<Position> movements = this.GetMovements(pair.Value);
+				foreach (Position pos in movements)
+				{
+					boards.Add(new Move(pair.Value, pos));
+				}
 			}
 		}
 
 		List<Position> movements2 = new List<Position>();
-		PlacePieceMovement(ref movements2, side);
+		if (turns == 1)
+			movements2.AddRange(GetSurroundings(GetPiecePosition(placedPieces.First().Value)));
+		else
+			PlacePieceMovement(ref movements2, side);
+		
 		List<BugType> visitedPieces = new List<BugType>();
 		foreach (Piece piece in notPlacedPieces)
 		{
@@ -146,15 +154,14 @@ public class Board
 				continue;
 
 			if (visitedPieces.Contains(piece.type))
-				break;
+				continue;
 
-			visitedPieces.Add(piece.type);
+			if (!queenPlaced && (turns >= 6) && piece.type != BugType.Queen)
+				continue;
 
 			foreach (Position pos in movements2)
 			{
-				Board newBoard = this.Clone();
-				newBoard.MovePiece(piece, pos);
-				boards.Add(newBoard);
+				boards.Add(new Move(piece, pos));
 			}
 		}
 		return boards;
@@ -369,6 +376,7 @@ public class Board
 
 	public bool MovePiece(Piece piece, (int, int, int) position)
 	{
+		Initialize();
 		//TODO FALTA COMPROBAR
 		if (placedPieces.ContainsKey(position))
 			return false;
@@ -386,7 +394,7 @@ public class Board
 			piece.SetPosition(position);
 		}
 		turns++;
-		FindQueens();
+		Initialize();
 
 		return true;
 	}
@@ -608,11 +616,11 @@ public class Board
 
 	public Board Clone()
 	{
-		Board brother = new Board();
-		brother.placedPieces = new Dictionary<(int, int, int), Piece>(this.placedPieces);
-		brother.notPlacedPieces = new List<Piece>(this.notPlacedPieces);
-		brother.turns = this.turns;
-		brother.Initialize();
-		return brother;
+		Board sibling = new Board();
+		sibling.placedPieces = new Dictionary<(int, int, int), Piece>(this.placedPieces);
+		sibling.notPlacedPieces = new List<Piece>(this.notPlacedPieces);
+		sibling.turns = this.turns;
+		sibling.Initialize();
+		return sibling;
 	}
 }
