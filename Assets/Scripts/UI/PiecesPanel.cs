@@ -14,6 +14,7 @@ public class PiecesPanel : MonoBehaviour
     private Board model;
     private float lastPos = 0;
     private Action<PieceUI> clickPieceCallback;
+    public List<PieceUI> pieces;
     public void Initialize(Board model, Action<PieceUI> callback)
     {
         this.model = model;
@@ -40,6 +41,7 @@ public class PiecesPanel : MonoBehaviour
                     pos.x = child.GetChild(i).GetComponent<RectTransform>().anchoredPosition.x + xMargin;
                     pos.y = child.GetChild(i).GetComponent<RectTransform>().anchoredPosition.y;
                     instance.GetComponent<PieceUI>().Initialize(piece, pos, ClickPiece);
+                    pieces.Add(instance.GetComponent<PieceUI>());
                     child.GetChild(i).GetComponent<Button>().enabled = false;
                     placed = true;
                 }
@@ -66,6 +68,7 @@ public class PiecesPanel : MonoBehaviour
                 instance.GetComponent<PieceUI>().Initialize(piece, pos, ClickPiece);
                 instance.GetComponent<RectTransform>().anchoredPosition = pos;
             }
+            pieces.Add(instance.GetComponent<PieceUI>());
         }
         Vector2 panelPos = transform.GetComponent<RectTransform>().anchoredPosition;
         panelPos.y = Hieght();
@@ -84,5 +87,16 @@ public class PiecesPanel : MonoBehaviour
     public void ClickPiece(PieceUI piece)
     {
         clickPieceCallback(piece);
+    }
+
+    public void RemovePiece(PieceUI piece)
+    {
+        pieces.Remove(piece);
+        piece.Remove();
+        foreach (PieceUI pui in pieces)
+        {
+            if (pui.piece.type == piece.piece.type && pui.piece.side == piece.piece.side && pui.piece.number == piece.piece.number - 1)
+                pui.GetComponent<Button>().enabled = true;
+        }
     }
 }

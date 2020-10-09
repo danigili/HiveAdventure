@@ -10,7 +10,6 @@ public class PieceUI : MonoBehaviour
     private Vector2 position;
     private bool remove = false;
     private Action<PieceUI> callback;
-
     private void Update()
     {
         GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(GetComponent<RectTransform>().anchoredPosition, position, Time.deltaTime*5);

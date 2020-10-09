@@ -41,6 +41,7 @@ public class BoardView : MonoBehaviour
             instance.GetComponent<PieceObject>().x = pair.Key.Item1;
             instance.GetComponent<PieceObject>().y = pair.Key.Item2;
             instance.GetComponent<PieceObject>().z = pair.Key.Item3;
+            pieces.Add(instance.GetComponent<PieceObject>());
         }
 
         panel1.Initialize(model, ClickPanelPiece);
@@ -73,11 +74,42 @@ public class BoardView : MonoBehaviour
     public void AIButton()
     {
         DateTime inicio = DateTime.Now;
-        int leaves = 0;
-        int bestValue = 0;
-        Debug.Log(BoardSerialization.ToJson(AI.FindBestMove(true, model, 0, out leaves, out bestValue)));
+        AI.AIResult ai = AI.FindBestMove(true, model, 0);
         Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds);
-        Debug.Log("Leaves: " + leaves + ", Value: " + bestValue);
+        Debug.Log("Leaves: " + ai.leaves + ", Value: " + ai.bestValue);
+        Debug.Log("" + ai.move.piece.position + "" + ai.move.position);
+
+        foreach (PieceObject po in pieces)
+        {
+            if (po.piece.Equals(ai.move.piece))
+            {
+                model.MovePiece(ai.move.piece, ai.move.position);
+                Position newPos = model.GetPiecePosition(po.piece);
+                po.SetHexPosition(ai.move.position.x, ai.move.position.y, ai.move.position.z);
+                selectedPiece = null;
+                selectedUIPiece = null;
+                return;
+            }
+        }
+        foreach (PieceUI pui in panel2.pieces)
+        {
+            if (pui.piece.Equals(ai.move.piece))
+            {
+                model.MovePiece(ai.move.piece, ai.move.position);
+                GameObject instance = Instantiate(piecePrefab, transform);
+                instance.GetComponent<PieceObject>().Initialize(ai.move.piece);
+                instance.GetComponent<PieceObject>().x = model.GetPiecePosition(ai.move.piece).x;
+                instance.GetComponent<PieceObject>().y = model.GetPiecePosition(ai.move.piece).y;
+                instance.GetComponent<PieceObject>().z = model.GetPiecePosition(ai.move.piece).z;
+                pieces.Add(instance.GetComponent<PieceObject>());
+                panel2.RemovePiece(pui);
+                selectedPiece = null;
+                selectedUIPiece = null;
+                return;
+            }
+        }
+        selectedPiece = null;
+        selectedUIPiece = null;
     }
 
     public void Evaluate()
@@ -173,7 +205,10 @@ public class BoardView : MonoBehaviour
         }
         else if (selectedUIPiece != null)
         {
-            selectedUIPiece.Remove();
+            if (selectedUIPiece.piece.side)
+                panel2.RemovePiece(selectedUIPiece);
+            else
+                panel1.RemovePiece(selectedUIPiece);
             model.MovePiece(selectedUIPiece.piece, (marker.x, marker.y, marker.z));
             Position newPos = model.GetPiecePosition(selectedUIPiece.piece);
             GameObject instance = Instantiate(piecePrefab, transform);
@@ -182,6 +217,7 @@ public class BoardView : MonoBehaviour
             instance.GetComponent<PieceObject>().y = model.GetPiecePosition(selectedUIPiece.piece).y;
             instance.GetComponent<PieceObject>().z = model.GetPiecePosition(selectedUIPiece.piece).z;
             selectedUIPiece = null;
+            pieces.Add(instance.GetComponent<PieceObject>());
         }
         foreach (GameObject m in markers)
             m.SetActive(false);

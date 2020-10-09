@@ -21,7 +21,7 @@ public class GameMain : MonoBehaviour
     public void Click1()
     {
         Debug.Log("HOLA");
-        boardView.GetComponent<BoardView>().Initialize(BoardSerialization.FromFile("Text/Boards/test4"));
+        boardView.GetComponent<BoardView>().Initialize(BoardSerialization.FromFile("Text/Boards/new"));
 
     }
 }
