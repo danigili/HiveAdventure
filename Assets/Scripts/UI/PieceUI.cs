@@ -23,6 +23,7 @@ public class PieceUI : MonoBehaviour
         this.callback = callback;
         this.position = pos;
         GetComponent<RectTransform>().anchoredPosition = position;
+        GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + piece.GetBugTypeName() + "_" + (piece.side ? "black" : "white") + "_bw");
         remove = false;
         GetComponent<Button>().enabled = true;
     }
