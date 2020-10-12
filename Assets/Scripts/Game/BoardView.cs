@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEngine;
 using System;
 using FullSerializer;
+using System.Xml.Schema;
+using UnityEditor;
 
 public class BoardView : MonoBehaviour
 {
@@ -221,5 +223,21 @@ public class BoardView : MonoBehaviour
         }
         foreach (GameObject m in markers)
             m.SetActive(false);
+    }
+
+    public void BoardSize(out float xMin, out float xMax, out float yMin, out float yMax)
+    {
+        xMin = 1000;
+        xMax = -1000;
+        yMin = 1000;
+        yMax = -1000;
+
+        foreach (PieceObject p in pieces)
+        {
+            xMin = Math.Min(xMin, p.transform.position.x);
+            xMax = Math.Max(xMax, p.transform.position.x);
+            yMin = Math.Min(yMin, p.transform.position.z);
+            yMax = Math.Max(yMax, p.transform.position.z);
+        }
     }
 }
