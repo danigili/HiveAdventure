@@ -23,14 +23,15 @@ public class AI : MonoBehaviour
         int bestValue = side ? -1000 : 1000;
         List<Move> bestMoves = new List<Move>();
         List<Move> movements = board.GetAllMovements(true);
-
+        int alpha = -10000;
+        int beta = 10000;
         result.leaves = 0;
         for (int i = 0; i < movements.Count; i++)
         {
             Board newBoard = board.Clone();
             newBoard.MovePiece(movements[i].piece, movements[i].position);
             
-            int value = EvaluateNode(newBoard, 1, !side, ref result.leaves);
+            int value = EvaluateNode(newBoard, 1, !side, ref result.leaves, alpha, beta);
             if ((!side && value <= bestValue) || (side && value >= bestValue))
             {
                 if (bestValue != value)
@@ -46,11 +47,10 @@ public class AI : MonoBehaviour
         return result;
     }
 
-    private static int EvaluateNode(Board board, int depth, bool side, ref int leaves)
+    private static int EvaluateNode(Board board, int depth, bool side, ref int leaves, int alpha, int beta)
     {
         leaves++;
-        int value = side ? -1000 : 1000;
-
+        
         if (depth > 2)
             return board.EvaluateBoard();
 
@@ -61,13 +61,17 @@ public class AI : MonoBehaviour
         List<Move> moves = board.GetAllMovements(side);
         foreach (Move m in moves)
         {
+            if (beta <= alpha)
+                break;
             Board newBoard = board.Clone();
             newBoard.MovePiece(m.piece, m.position);
             if (side)
-                value = Math.Max(EvaluateNode(newBoard, depth + 1, !side, ref leaves), value);
+                alpha = Math.Max(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), alpha);
             else
-                value = Math.Min(EvaluateNode(newBoard, depth + 1, !side, ref leaves), value);
+                beta = Math.Min(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), beta);
         }
+
+        int value = side ? alpha : beta;
         if (moves.Count == 0)
             value = 0;
 
