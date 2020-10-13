@@ -346,7 +346,7 @@ public class Board
 		KeyValuePair<(int, int, int), Piece> leftMostPiece = placedPieces.First();
 		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
 		{
-			if (pair.Key.Item2 < leftMostPiece.Key.Item2)
+			if (pair.Key.Item2 < leftMostPiece.Key.Item2 && pair.Key.Item3==0)
 				leftMostPiece = pair;
 		}
 		Position pos = GetSurrounding(GetPiecePosition(leftMostPiece.Value), 3);
