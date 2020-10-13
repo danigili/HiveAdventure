@@ -54,13 +54,7 @@ public class BoardView : MonoBehaviour
 
     public void PruobaMove()
     {
-        DateTime inicio = DateTime.Now;
-        for (int i = 0; i < 1000; i++)
-            model.GetAllMovements(true);
-        Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds);
-        Debug.Log(model.GetAllMovements(false).Count);
 
-        
         
     }
 

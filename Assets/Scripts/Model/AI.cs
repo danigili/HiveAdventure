@@ -22,14 +22,14 @@ public class AI : MonoBehaviour
         AIResult result = new AIResult();
         int bestValue = side ? -1000 : 1000;
         List<Move> bestMoves = new List<Move>();
-        List<Move> movements = board.GetAllMovements(true);
         int alpha = -10000;
         int beta = 10000;
         result.leaves = 0;
-        for (int i = 0; i < movements.Count; i++)
+        board.side = side;
+        foreach (Move m in board)
         {
             Board newBoard = board.Clone();
-            newBoard.MovePiece(movements[i].piece, movements[i].position);
+            newBoard.MovePiece(m.piece, m.position);
             
             int value = EvaluateNode(newBoard, 1, !side, ref result.leaves, alpha, beta);
             if ((!side && value <= bestValue) || (side && value >= bestValue))
@@ -37,11 +37,11 @@ public class AI : MonoBehaviour
                 if (bestValue != value)
                     bestMoves.Clear();
                 bestValue = value;
-                bestMoves.Add(movements[i]);
+                bestMoves.Add(m);
             }
         }
         result.bestValue = bestValue;
-        var random = new System.Random(DateTime.Now.Second+ movements.Count);
+        var random = new System.Random(DateTime.Now.Second+alpha+beta+result.leaves);
         result.move = bestMoves[random.Next() % bestMoves.Count];
         board.Initialize();
         return result;
@@ -58,9 +58,12 @@ public class AI : MonoBehaviour
         if (winner != Winner.None)
             return board.EvaluateBoard();
 
-        List<Move> moves = board.GetAllMovements(side);
-        foreach (Move m in moves)
+        board.side = side;
+        bool blocked = true;
+        foreach (Move m in board)
         {
+            blocked = false;
+
             if (beta <= alpha)
                 break;
             Board newBoard = board.Clone();
@@ -72,7 +75,7 @@ public class AI : MonoBehaviour
         }
 
         int value = side ? alpha : beta;
-        if (moves.Count == 0)
+        if (blocked)
             value = 0;
 
         if (value > 100)

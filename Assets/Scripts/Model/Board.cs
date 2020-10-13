@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using System;
+using System.Collections;
 
 public enum Winner
 {
@@ -12,7 +13,7 @@ public enum Winner
 }
 
 [Serializable]
-public class Board
+public class Board : IEnumerable<Move>
 {
 	// Peces
 	[SerializeField]
@@ -26,6 +27,8 @@ public class Board
 	private bool queen1Placed = false;
 	[NonSerialized]
 	private bool queen2Placed = false;
+	[NonSerialized]
+	public bool side = false;
 
 	public Board()
 	{
@@ -119,12 +122,10 @@ public class Board
 		return null;
 	}
 
-	public List<Move> GetAllMovements(bool side)
+	public IEnumerator<Move> GetAllMovements()
 	{
 		Initialize();
 		bool queenPlaced = side ? queen2Placed : queen1Placed;
-
-		List<Move> boards = new List<Move>();
 
 		if (queenPlaced)
 		{
@@ -136,7 +137,7 @@ public class Board
 				List<Position> movements = this.GetMovements(pair.Value);
 				foreach (Position pos in movements)
 				{
-					boards.Add(new Move(pair.Value, pos));
+					yield return new Move(pair.Value, pos);
 				}
 			}
 		}
@@ -163,10 +164,9 @@ public class Board
 
 			foreach (Position pos in movements2)
 			{
-				boards.Add(new Move(piece, pos));
+				yield return new Move(piece, pos);
 			}
 		}
-		return boards;
 	}
 
 	public bool IsBlocked(Piece piece)
@@ -625,4 +625,19 @@ public class Board
 		sibling.Initialize();
 		return sibling;
 	}
+
+    public IEnumerator<Move> GetEnumerator()
+    {
+		return GetAllMovements();
+	}
+
+    IEnumerator<Move> IEnumerable<Move>.GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
 }
