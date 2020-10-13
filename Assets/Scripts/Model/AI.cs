@@ -20,8 +20,8 @@ public class AI : MonoBehaviour
     public static AIResult FindBestMove(bool side, Board board, int depth)
     {
         AIResult result = new AIResult();
-        int bestMove = 0;
         int bestValue = side ? -1000 : 1000;
+        List<Move> bestMoves = new List<Move>();
         List<Move> movements = board.GetAllMovements(true);
 
         result.leaves = 0;
@@ -31,14 +31,17 @@ public class AI : MonoBehaviour
             newBoard.MovePiece(movements[i].piece, movements[i].position);
             
             int value = EvaluateNode(newBoard, 1, !side, ref result.leaves);
-            if ((!side && value < bestValue) || (side && value > bestValue))
+            if ((!side && value <= bestValue) || (side && value >= bestValue))
             {
-                bestMove = i;
+                if (bestValue != value)
+                    bestMoves.Clear();
                 bestValue = value;
+                bestMoves.Add(movements[i]);
             }
         }
         result.bestValue = bestValue;
-        result.move = movements[bestMove];
+        var random = new System.Random(DateTime.Now.Second+ movements.Count);
+        result.move = bestMoves[random.Next() % bestMoves.Count];
         board.Initialize();
         return result;
     }
@@ -69,9 +72,10 @@ public class AI : MonoBehaviour
             value = 0;
 
         if (value > 100)
-            value -= depth;
+            value -= depth*10;
         if (value < -100)
-            value += depth;
+            value += depth*10;
+
         return value;
     }
 

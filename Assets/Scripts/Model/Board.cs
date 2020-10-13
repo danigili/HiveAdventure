@@ -142,7 +142,9 @@ public class Board
 		}
 
 		List<Position> movements2 = new List<Position>();
-		if (turns == 1)
+		if (turns == 0)
+			movements2.Add(new Position(0, 0, 0));
+		else if (turns == 1)
 			movements2.AddRange(GetSurroundings(GetPiecePosition(placedPieces.First().Value)));
 		else
 			PlacePieceMovement(ref movements2, side);
