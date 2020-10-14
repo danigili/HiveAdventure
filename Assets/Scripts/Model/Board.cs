@@ -13,7 +13,7 @@ public enum Winner
 }
 
 [Serializable]
-public class Board : IEnumerable<Move>
+public class Board 
 {
 	// Peces
 	[SerializeField]
@@ -122,24 +122,31 @@ public class Board : IEnumerable<Move>
 		return null;
 	}
 
-	public IEnumerator<Move> GetAllMovements()
+	public int Count()
 	{
+		return placedPieces.Count + 1;
+	}
+	public List<Move> GetAllMovements(int current)
+	{
+		List<Move> list = new List<Move>();
+
 		Initialize();
 		bool queenPlaced = side ? queen2Placed : queen1Placed;
 
-		if (queenPlaced)
+		if (placedPieces.Count > current)
 		{
-			foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
-			{
-				if (pair.Value.side != side)
-					continue;
+			if (!queenPlaced)
+				return list;
 
-				List<Position> movements = this.GetMovements(pair.Value);
-				foreach (Position pos in movements)
-				{
-					yield return new Move(pair.Value, pos);
-				}
+			if (placedPieces.ElementAt(current).Value.side != side)
+				return list;
+
+			List<Position> movements = GetMovements(placedPieces.ElementAt(current).Value);
+			foreach (Position pos in movements)
+			{
+				list.Add(new Move(placedPieces.ElementAt(current).Value, pos));
 			}
+			return list;
 		}
 
 		List<Position> movements2 = new List<Position>();
@@ -149,7 +156,7 @@ public class Board : IEnumerable<Move>
 			movements2.AddRange(GetSurroundings(GetPiecePosition(placedPieces.First().Value)));
 		else
 			PlacePieceMovement(ref movements2, side);
-		
+
 		List<BugType> visitedPieces = new List<BugType>();
 		foreach (Piece piece in notPlacedPieces)
 		{
@@ -164,10 +171,13 @@ public class Board : IEnumerable<Move>
 
 			foreach (Position pos in movements2)
 			{
-				yield return new Move(piece, pos);
+				list.Add(new Move(piece, pos));
 			}
+			return list;
 		}
+		return list;
 	}
+
 
 	public bool IsBlocked(Piece piece)
 	{
@@ -626,18 +636,5 @@ public class Board : IEnumerable<Move>
 		return sibling;
 	}
 
-    public IEnumerator<Move> GetEnumerator()
-    {
-		return GetAllMovements();
-	}
 
-    IEnumerator<Move> IEnumerable<Move>.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
 }

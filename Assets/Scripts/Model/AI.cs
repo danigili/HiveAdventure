@@ -26,18 +26,22 @@ public class AI : MonoBehaviour
         int beta = 10000;
         result.leaves = 0;
         board.side = side;
-        foreach (Move m in board)
+        for (int i = 0; i < board.Count(); i++)
         {
-            Board newBoard = board.Clone();
-            newBoard.MovePiece(m.piece, m.position);
-            
-            int value = EvaluateNode(newBoard, 1, !side, ref result.leaves, alpha, beta);
-            if ((!side && value <= bestValue) || (side && value >= bestValue))
+            List<Move> moves = board.GetAllMovements(i);
+            for (int j = 0; j < moves.Count; j++)
             {
-                if (bestValue != value)
-                    bestMoves.Clear();
-                bestValue = value;
-                bestMoves.Add(m);
+                Board newBoard = board.Clone();
+                newBoard.MovePiece(moves[j].piece, moves[j].position);
+
+                int value = EvaluateNode(newBoard, 1, !side, ref result.leaves, alpha, beta);
+                if ((!side && value <= bestValue) || (side && value >= bestValue))
+                {
+                    if (bestValue != value)
+                        bestMoves.Clear();
+                    bestValue = value;
+                    bestMoves.Add(moves[j]);
+                }
             }
         }
         result.bestValue = bestValue;
@@ -60,18 +64,22 @@ public class AI : MonoBehaviour
 
         board.side = side;
         bool blocked = true;
-        foreach (Move m in board)
+        for (int i = 0; i < board.Count(); i++)
         {
-            blocked = false;
+            List<Move> m = board.GetAllMovements(i);
+            for (int j = 0; j < m.Count; j++)
+            {
+                blocked = false;
 
-            if (beta <= alpha)
-                break;
-            Board newBoard = board.Clone();
-            newBoard.MovePiece(m.piece, m.position);
-            if (side)
-                alpha = Math.Max(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), alpha);
-            else
-                beta = Math.Min(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), beta);
+                if (beta <= alpha)
+                    break;
+                Board newBoard = board.Clone();
+                newBoard.MovePiece(m[j].piece, m[j].position);
+                if (side)
+                    alpha = Math.Max(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), alpha);
+                else
+                    beta = Math.Min(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), beta);
+            }
         }
 
         int value = side ? alpha : beta;
