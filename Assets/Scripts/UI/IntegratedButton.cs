@@ -27,4 +27,11 @@ public class IntegratedButton : MonoBehaviour
         pos.y = 1f;
         transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * speed*2);
     }
+
+    private void OnMouseDown()
+    {
+        StartCoroutine(GameObject.FindObjectOfType<GameMain>().IntegratedButtonClick("quick"));
+        
+        
+    }
 }

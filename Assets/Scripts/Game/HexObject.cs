@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public class HexObject : MonoBehaviour
@@ -15,6 +16,13 @@ public class HexObject : MonoBehaviour
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public void SetHexPosition(Position pos)
+    {
+        x = pos.x;
+        y = pos.y;
+        z = pos.z;
     }
 
     public Vector3 GetWorldPosition()

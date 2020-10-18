@@ -17,15 +17,15 @@ public class PieceUI : MonoBehaviour
             gameObject.SetActive(false);
     }
 
-    public void Initialize(Piece piece, Vector2 pos, Action<PieceUI> callback)
+    public void Initialize(Piece piece, Action<PieceUI> callback)
     {
         this.piece = piece;
         this.callback = callback;
-        this.position = pos;
         GetComponent<RectTransform>().anchoredPosition = position;
         GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + piece.GetBugTypeName() + "_" + (piece.side ? "black" : "white") + "_bw");
         remove = false;
         GetComponent<Button>().enabled = true;
+        
     }
 
     public void Click()
@@ -36,6 +36,7 @@ public class PieceUI : MonoBehaviour
     public void SetPosition(Vector2 pos)
     {
         position = pos;
+        gameObject.SetActive(true);
     }
 
     public void Remove()

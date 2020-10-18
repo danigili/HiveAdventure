@@ -122,6 +122,38 @@ public class Board
 		return null;
 	}
 
+	public bool CanTakeTurn(bool side)
+	{
+		Initialize();
+		bool queenPlaced = side ? queen2Placed : queen1Placed;
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		{
+			if (!queenPlaced)
+				break;
+
+			if (pair.Value.side != side)
+				continue;
+
+			if (GetMovements(pair.Value).Count > 0)
+				return true;
+		}
+
+		if (turns < 2)
+			return true;
+
+		List<Position> movements2 = new List<Position>();
+		PlacePieceMovement(ref movements2, side);
+		if (movements2.Count == 0)
+			return false;
+
+		foreach (Piece p in notPlacedPieces)
+			if (p.side == side)
+				return true;
+
+		return false;
+
+	}
+
 	public int Count()
 	{
 		return placedPieces.Count + 1;

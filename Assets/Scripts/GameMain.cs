@@ -2,42 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
 public class GameMain : MonoBehaviour
 {
     public enum Stage
     { 
         Start,
+        Mode,
         Game,
         Adventure,
-        Pause
+        Pause,
+        End
     }
 
     public BoardView boardView;
     public CameraController camera;
     private float angle = 60;
     public Stage stage = Stage.Start;
+    public GameObject startPanel;
+    public GameObject integratedUI;
+    public GameObject endPanel;
+    private float endTimer = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
         UpdateCameraPosition();
+        UpdateStartMenu();
+        UpdateEndOfGame();
+        endTimer -= Time.deltaTime;
     }
 
-    public void Click1()
+    public void PauseClick()
     {
         Debug.Log("HOLA");
-        boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"));
+        StartCoroutine(RestartGame());
 
     }
 
-    public void Click2()
+    private IEnumerator RestartGame()
+    {
+        boardView.Clear();
+        yield return new WaitForSeconds(1);
+        boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"), EndOfGame);
+    }
+
+    public void CameraClick()
     {
         if (angle == 45)
             angle = 60;
@@ -51,14 +67,14 @@ public class GameMain : MonoBehaviour
 
     private void UpdateCameraPosition()
     {
-        if (stage == Stage.Start)
+        if (stage == Stage.Start || stage == Stage.Mode)
         {
             camera.SetCenter(0, 0);
             camera.SetSize(2.6f);
         }
         else if (stage == Stage.Game)
         {
-            if (boardView != null && boardView.pieces.Count > 0)
+            if (boardView != null && boardView.piecesPool.Count() > 0)
             {
                 float xMin, xMax, yMin, yMax;
                 boardView.BoardSize(out xMin, out xMax, out yMin, out yMax);
@@ -72,5 +88,62 @@ public class GameMain : MonoBehaviour
             }
         }
         camera.SetAngle(angle);
+    }
+
+    private void UpdateStartMenu()
+    {
+        if (stage == Stage.Start)
+        {
+            startPanel.SetActive(true);
+
+            if (Input.anyKeyDown || Input.GetMouseButtonDown(0))
+            {
+                stage = Stage.Mode;
+                startPanel.SetActive(false);
+                integratedUI.GetComponent<Animator>().SetBool("show", true);
+            }
+        }
+    }
+
+    private void UpdateEndOfGame()
+    {
+        if (stage == Stage.End && endTimer < 0)
+        {
+            if (Input.anyKeyDown || Input.GetMouseButtonDown(0))
+            {
+                endPanel.GetComponent<Animator>().SetBool("show", false);
+                stage = Stage.Game;
+                StartCoroutine(RestartGame());
+            }
+        }
+    }
+
+    public IEnumerator IntegratedButtonClick(string option)
+    {
+
+        if (option == "quick")
+        {
+            integratedUI.GetComponent<Animator>().SetBool("show", false);
+            yield return new WaitForSeconds(0.5f);
+            stage = Stage.Game;
+            boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"), EndOfGame);
+
+        }
+    }
+
+    public void EndOfGame(Winner winner)
+    {
+        Debug.Log("FIN");
+        endPanel.SetActive(true);
+        endPanel.GetComponent<Animator>().SetBool("show", true);
+        if (winner == Winner.Black)
+            endPanel.GetComponentInChildren<Text>().text = "Black Wins";
+        if (winner == Winner.White)
+            endPanel.GetComponentInChildren<Text>().text = "White wins";
+        else
+            endPanel.transform.Find("Text").GetComponent<Text>().text = "Draw";
+        
+        stage = Stage.End;
+        endTimer = 1;
     }
 }
