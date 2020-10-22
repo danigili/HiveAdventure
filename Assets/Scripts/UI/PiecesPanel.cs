@@ -71,8 +71,7 @@ public class PiecesPanel : MonoBehaviour
         bool placed = false;
         bool firstPiece = true;
         Vector2 pos;
-        if (instance.GetComponent<PieceUI>().piece.type == BugType.Ant)
-            Debug.Log("");
+
         // Put the piece next to a piece of the same type
         for (int i = child.childCount - 1; i >= 0 && !placed; i--)
         {

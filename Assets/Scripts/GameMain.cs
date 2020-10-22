@@ -41,9 +41,7 @@ public class GameMain : MonoBehaviour
 
     public void PauseClick()
     {
-        Debug.Log("HOLA");
         StartCoroutine(RestartGame());
-
     }
 
     private IEnumerator RestartGame()
@@ -120,7 +118,6 @@ public class GameMain : MonoBehaviour
 
     public IEnumerator IntegratedButtonClick(string option)
     {
-
         if (option == "quick")
         {
             integratedUI.GetComponent<Animator>().SetBool("show", false);
@@ -133,13 +130,12 @@ public class GameMain : MonoBehaviour
 
     public void EndOfGame(Winner winner)
     {
-        Debug.Log("FIN");
         endPanel.SetActive(true);
         endPanel.GetComponent<Animator>().SetBool("show", true);
         if (winner == Winner.Black)
-            endPanel.GetComponentInChildren<Text>().text = "Black Wins";
-        if (winner == Winner.White)
-            endPanel.GetComponentInChildren<Text>().text = "White wins";
+            endPanel.transform.Find("Text").GetComponent<Text>().text = "Black Wins";
+        else if (winner == Winner.White)
+            endPanel.transform.Find("Text").GetComponent<Text>().text = "White wins";
         else
             endPanel.transform.Find("Text").GetComponent<Text>().text = "Draw";
         

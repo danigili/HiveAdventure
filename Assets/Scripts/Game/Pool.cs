@@ -13,6 +13,7 @@ public class Pool : MonoBehaviour
 		for (int i = 0; i < initialAmount; i++)
 		{
 			GameObject instance = Instantiate(prefab,transform);
+			instance.transform.position = new Vector3(0, -1, 0);
 			instance.SetActive(false);
 			list.Add(instance);
 		}
@@ -22,6 +23,7 @@ public class Pool : MonoBehaviour
 	{
 		foreach (GameObject obj in list)
 		{
+			obj.transform.position = new Vector3(0, -1, 0);
 			obj.SetActive(false);
 		}
 	}
