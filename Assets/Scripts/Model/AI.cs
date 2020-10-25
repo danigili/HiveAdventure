@@ -80,6 +80,8 @@ public class AI : MonoBehaviour
                 else
                     beta = Math.Min(EvaluateNode(newBoard, depth + 1, !side, ref leaves, alpha, beta), beta);
             }
+            if (beta <= alpha)
+                break;
         }
 
         int value = side ? alpha : beta;

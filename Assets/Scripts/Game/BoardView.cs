@@ -32,7 +32,8 @@ public class BoardView : MonoBehaviour
         this.finished = false;
         Dictionary<(int, int, int), Piece>  placedPieces = model.GetPlacedPieces();
         List<Piece> notPlacedPieces = model.GetNotPlacedPieces();
-
+        
+        piecesPool.ClearAll();
         foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
         {
             GameObject instance = piecesPool.GetInstance(true);
@@ -45,7 +46,7 @@ public class BoardView : MonoBehaviour
         panels[0].Initialize(model, ClickPanelPiece);
         panels[1].Initialize(model, ClickPanelPiece);
         panels[0].transform.parent.GetComponent<Animator>().SetBool("show", true);
-        piecesPool.ClearAll();
+        
         markersPool.ClearAll();
         selectedPiece = null;
         selectedUIPiece = null;

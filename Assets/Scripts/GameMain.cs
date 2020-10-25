@@ -46,9 +46,12 @@ public class GameMain : MonoBehaviour
 
     private IEnumerator RestartGame()
     {
-        boardView.Clear();
-        yield return new WaitForSeconds(1);
-        boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"), EndOfGame);
+        if (stage == Stage.Game)
+        {
+            boardView.Clear();
+            yield return new WaitForSeconds(1);
+            boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"), EndOfGame);
+        }
     }
 
     public void CameraClick()
