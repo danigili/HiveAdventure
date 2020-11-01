@@ -94,7 +94,24 @@ namespace Tests
         [Test]
         public void Beetle()
         {
-            // TODO
+            StreamReader reader = new StreamReader(resourcesPath + "test1.json");
+            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Piece beetle = board.GetPiece(new Position(-1, -1, 0));
+            List<Position> movements = board.GetMovements(beetle);
+            Assert.AreEqual(4, movements.Count);
+            Assert.IsTrue(movements.Contains(new Position(-1, 1, 0)));
+            Assert.IsTrue(movements.Contains(new Position(-2, -2, 0)));
+            Assert.IsTrue(movements.Contains(new Position(-1, 0, 1)));
+            Assert.IsTrue(movements.Contains(new Position(-1, -3, 1)));
+            
+            Piece beetle2 = board.GetPiece(new Position(0, -2, 0));
+            List<Position> movements2 = board.GetMovements(beetle2);
+            Assert.AreEqual(5, movements2.Count);
+            Assert.IsTrue(movements2.Contains(new Position(0, 0, 0)));
+            Assert.IsTrue(movements2.Contains(new Position(0, -1, 0)));
+            Assert.IsTrue(movements2.Contains(new Position(0, -3, 0)));
+            Assert.IsTrue(movements2.Contains(new Position(0, -4, 0)));
+            Assert.IsTrue(movements2.Contains(new Position(1, -3, 0)));
         }
 
         // Test the Ant Movement
