@@ -390,8 +390,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 50529679}
-        m_MethodName: Hola
+      - m_Target: {fileID: 901963312}
+        m_MethodName: PrintJson
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -510,7 +510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &450955672
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1150,6 +1150,8 @@ Transform:
   m_Children:
   - {fileID: 1827066751}
   - {fileID: 307661624}
+  - {fileID: 1004199337}
+  - {fileID: 1894020954}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1165,12 +1167,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c7fbd233135cf499b8c7b8b9544d8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  piecePrefab: {fileID: 7806107929303656012, guid: 654465f789645f44382321353bf56072,
-    type: 3}
-  markerPrefab: {fileID: 7806107929303656012, guid: 030891dd8a9e77046a002e8a294dfd8c,
-    type: 3}
   piecesPool: {fileID: 307661625}
   markersPool: {fileID: 1827066752}
+  rocksPool: {fileID: 1004199338}
+  chainsPool: {fileID: 1894020955}
   selectedPiece: {fileID: 0}
   selectedUIPiece: {fileID: 0}
   panels:
@@ -1279,6 +1279,51 @@ MonoBehaviour:
   size: 0
   speed: 4
   rotationSpeed: 8
+--- !u!1 &1004199336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1004199337}
+  - component: {fileID: 1004199338}
+  m_Layer: 0
+  m_Name: Rocks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1004199337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004199336}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 901963311}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1004199338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004199336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5121a77ba8aefd34195a46287232a0ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 7316011120830061059, guid: 394e489a7ce2c2d408b580094ab2630f, type: 3}
+  initialAmount: 6
 --- !u!1 &1013362534
 GameObject:
   m_ObjectHideFlags: 0
@@ -2884,6 +2929,51 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1879152243}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1894020953
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1894020954}
+  - component: {fileID: 1894020955}
+  m_Layer: 0
+  m_Name: Chains
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1894020954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894020953}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 901963311}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1894020955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894020953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5121a77ba8aefd34195a46287232a0ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6511723317698109769, guid: 470c99b84d980f4488ece0f5fac5edcb, type: 3}
+  initialAmount: 6
 --- !u!1001 &2112394180
 PrefabInstance:
   m_ObjectHideFlags: 0
