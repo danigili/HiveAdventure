@@ -12,6 +12,12 @@ public enum Winner
 	Draw
 }
 
+public enum GameType
+{
+	Win,
+	Survive
+}
+
 [Serializable]
 public class Board 
 {
@@ -22,7 +28,13 @@ public class Board
 	private List<Piece> notPlacedPieces;
 	[SerializeField]
 	private int turns;
-	
+	[SerializeField]
+	private List<Position> blockedPositions;
+	[SerializeField]
+	private GameType type;
+	[SerializeField]
+	private int maxTurns;
+
 	[NonSerialized]
 	private bool queen1Placed = false;
 	[NonSerialized]
@@ -34,6 +46,7 @@ public class Board
 	{
 		placedPieces = new DualDictionary<(int, int, int), Piece>();
 		notPlacedPieces = new List<Piece>();
+		blockedPositions = new List<Position>();
 		Initialize();
 	}
 
@@ -68,6 +81,11 @@ public class Board
 	public List<Piece> GetNotPlacedPieces()
 	{
 		return notPlacedPieces;
+	}
+
+	public List<Position> GetBlockedPositions()
+	{
+		return blockedPositions;
 	}
 
 	public Winner CheckEndCondition()
@@ -214,6 +232,9 @@ public class Board
 	public bool IsBlocked(Piece piece)
 	{
 		// La peça no es pot moure si
+		if (piece.blocked)
+			return true;
+
 		// Trenca la cohesió
 		if (BreaksCohesion(piece))
 			return true;
@@ -293,6 +314,16 @@ public class Board
 					break;
 			}
 		}
+		
+		// Remove Rocks
+		foreach (Position p in blockedPositions)
+			movements.Remove(p);
+
+		// Remove floating moves
+		for (int i = movements.Count - 1; i >= 0 ; i--)
+			if (IsFloating(movements[i], pos))
+				movements.RemoveAt(i);
+
 		//Remove duplicates
 		return movements.Distinct().ToList();
 	}
@@ -376,7 +407,7 @@ public class Board
 			{
 				int j = 1;
 				while (pos != null && placedPieces.ContainsKey((pos.x, pos.y, pos.z + j))) j++;
-				if (pos != null && placedPieces[(pos.x, pos.y, pos.z + j - 1)].side != side)
+				if (pos != null && placedPieces.ContainsKey((pos.x, pos.y, pos.z + j - 1)) && placedPieces[(pos.x, pos.y, pos.z + j - 1)].side != side)
 				{
 					movements.RemoveAt(i);
 					break;
@@ -467,7 +498,7 @@ public class Board
 	{
 		Position[] neighbors = GetSurroundings(pos);
 		for (int i = 0; i < neighbors.Length; i++)
-			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y, neighbors[i].z)))
+			if (!placedPieces.ContainsKey((neighbors[i].x, neighbors[i].y, neighbors[i].z)) && !blockedPositions.Contains(neighbors[i]))
 				neighbors[i] = null;
 		return neighbors;
 	}
@@ -574,6 +605,16 @@ public class Board
 			}
 		}
 		return null;
+	}
+
+	private bool IsFloating(Position pos, Position piecePos)
+	{
+		if (pos.z != 0)
+			return false;
+		for (int i = 0; i < 6; i++)
+			if (GetNeighbor(pos, i) != null && piecePos != GetNeighbor(pos, i))
+				return false;
+		return true;
 	}
 
 	private Position[] cohesionNeighbors = new Position[6];

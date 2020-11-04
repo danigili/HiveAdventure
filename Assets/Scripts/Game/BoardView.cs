@@ -9,10 +9,10 @@ using UnityEditor;
 
 public class BoardView : MonoBehaviour
 {
-    public GameObject piecePrefab;
-    public GameObject markerPrefab;
     public Pool piecesPool;
     public Pool markersPool;
+    public Pool rocksPool;
+    public Pool chainsPool;
     private Board model;
     public PieceObject selectedPiece;
     public PieceUI selectedUIPiece;
@@ -37,10 +37,21 @@ public class BoardView : MonoBehaviour
         foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
         {
             GameObject instance = piecesPool.GetInstance(true);
-            instance.GetComponent<PieceObject>().Initialize(pair.Value);
+            instance.GetComponent<PieceObject>().Initialize(pair.Value, ClickDown);
             instance.GetComponent<PieceObject>().x = pair.Key.Item1;
             instance.GetComponent<PieceObject>().y = pair.Key.Item2;
             instance.GetComponent<PieceObject>().z = pair.Key.Item3;
+            if (pair.Value.blocked)
+            {
+                GameObject chainInstance = chainsPool.GetInstance(true);
+                chainInstance.GetComponent<HexObject>().SetHexPosition(pair.Value.position);
+            }    
+        }
+
+        foreach (Position p in model.GetBlockedPositions())
+        {
+            GameObject instance = rocksPool.GetInstance(true);
+            instance.GetComponent<HexObject>().SetHexPosition(p);
         }
 
         panels[0].Initialize(model, ClickPanelPiece);
@@ -103,7 +114,7 @@ public class BoardView : MonoBehaviour
                 {
                     model.MovePiece(ai.move.piece, ai.move.position);
                     GameObject instance = piecesPool.GetInstance(true);
-                    instance.GetComponent<PieceObject>().Initialize(ai.move.piece);
+                    instance.GetComponent<PieceObject>().Initialize(ai.move.piece, ClickDown);
                     instance.GetComponent<PieceObject>().SetHexPosition(model.GetPiecePosition(ai.move.piece));
                     panel.RemovePiece(pui);
                     selectedPiece = null;
@@ -143,7 +154,11 @@ public class BoardView : MonoBehaviour
         selectedPiece = null;
         selectedUIPiece = piece;
         for (int i = 0; i < positions.Count; i++)
-            markersPool.GetInstance<Marker>(true).SetHexPosition(positions[i]);
+        {
+            Marker marker = markersPool.GetInstance<Marker>(true);
+            marker.Initialize(ClickDownMarker);
+            marker.SetHexPosition(positions[i]);
+        }
     }
 
     public void ClickDown(PieceObject piece)
@@ -164,8 +179,12 @@ public class BoardView : MonoBehaviour
         }
         selectedPiece = piece;
         selectedUIPiece = null;
-        for (int i = 0; i <positions.Count; i++)
-            markersPool.GetInstance<Marker>(true).SetHexPosition(positions[i]);
+        for (int i = 0; i < positions.Count; i++)
+        {
+            Marker marker = markersPool.GetInstance<Marker>(true);
+            marker.Initialize(ClickDownMarker);
+            marker.SetHexPosition(positions[i]);
+        }
     }
 
     public void ClickDownMarker(Marker marker)
@@ -186,7 +205,7 @@ public class BoardView : MonoBehaviour
             model.MovePiece(selectedUIPiece.piece, (marker.x, marker.y, marker.z));
             Position newPos = model.GetPiecePosition(selectedUIPiece.piece);
             GameObject instance = piecesPool.GetInstance(true);
-            instance.GetComponent<PieceObject>().Initialize(selectedUIPiece.piece);
+            instance.GetComponent<PieceObject>().Initialize(selectedUIPiece.piece, ClickDown);
             instance.GetComponent<PieceObject>().SetHexPosition(model.GetPiecePosition(selectedUIPiece.piece));
             selectedUIPiece = null;
         }

@@ -18,6 +18,7 @@ public class Piece
 	public bool side;
 	public BugType type;
 	public int number;
+	public bool blocked;
 
 	[NonSerialized]
 	public Position position;
@@ -27,6 +28,7 @@ public class Piece
 		this.side = side;
 		this.type = type;
 		this.number = number;
+		this.blocked = false;
 		position = null;
 	}
 
