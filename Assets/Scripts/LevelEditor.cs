@@ -126,8 +126,9 @@ public class LevelEditor : MonoBehaviour
     }
 
     public void AddChain()
-    { 
-    
+    {
+        markersPool.ClearAll();
+        selectedItem = chainsPool.GetInstance<ChainObject>(false);
     }
 
     public void AddPiece(Dropdown dropdown)
@@ -137,16 +138,45 @@ public class LevelEditor : MonoBehaviour
 
     public void RemovePiece()
     {
-        if (selectedItem.GetType() == typeof(RockObject))
+        if (selectedItem != null)
         {
-            model.GetBlockedPositions().Remove(selectedItem.GetHexPosition());
-            selectedItem.gameObject.SetActive(false);
+            if (selectedItem.GetType() == typeof(RockObject))
+            {
+                model.GetBlockedPositions().Remove(selectedItem.GetHexPosition());
+                selectedItem.gameObject.SetActive(false);
+            }
+
+            else if (selectedItem.GetType() == typeof(PieceObject))
+            {
+                if (((PieceObject)selectedItem).piece.blocked)
+                {
+                    ((PieceObject)selectedItem).piece.blocked = false;
+                    foreach (GameObject obj in chainsPool)
+                    {
+                        if (obj.GetComponent<ChainObject>().GetHexPosition() == selectedItem.GetHexPosition())
+                            obj.SetActive(false);
+                    }
+                    selectedItem = null;
+                }
+                else if (!model.IsBlocked(((PieceObject)selectedItem).piece))
+                {
+                    model.GetPlacedPieces().Remove((selectedItem.GetHexPosition().x, selectedItem.GetHexPosition().y, selectedItem.GetHexPosition().z));
+                    selectedItem.gameObject.SetActive(false);
+                }
+            }
+        }
+        else if (selectedUIPiece != null)
+        {
+            model.GetNotPlacedPieces().Remove(selectedUIPiece.piece);
+            panels[0].RemovePiece(selectedUIPiece);
+            panels[1].RemovePiece(selectedUIPiece);
         }
     }
 
     public void ClickPanelPiece(PieceUI piece)
-    { 
-    
+    {
+        selectedUIPiece = piece;
+        selectedItem = null;
     }
 
     public void ClickDown(HexObject piece)
@@ -154,7 +184,7 @@ public class LevelEditor : MonoBehaviour
         if (typeof(Marker) == piece.GetType())
         {
             // Add the rock to the board and place object
-            if (selectedItem.GetComponent<RockObject>() != null)
+            if (selectedItem != null & selectedItem.GetComponent<RockObject>() != null)
             {
                 model.GetBlockedPositions().Add(piece.GetHexPosition());
                 selectedItem.SetHexPosition(piece);
@@ -166,6 +196,23 @@ public class LevelEditor : MonoBehaviour
         else if (typeof(RockObject) == piece.GetType())
         {
             markersPool.ClearAll();
+            selectedItem = piece;
+        }
+        else if (typeof(PieceObject) == piece.GetType())
+        {
+            if (selectedItem != null)
+            {
+                // Add a chain to the piece
+                if (selectedItem.GetComponent<ChainObject>() != null)
+                {
+                    ((PieceObject)piece).piece.blocked = true;
+                    selectedItem.SetHexPosition(piece);
+                    selectedItem.gameObject.SetActive(true);
+                    selectedItem = null;
+                    return;
+                }
+            }
+            // Select piece
             selectedItem = piece;
         }
     }

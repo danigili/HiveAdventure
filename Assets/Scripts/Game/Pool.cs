@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Pool : MonoBehaviour
+public class Pool : MonoBehaviour, IEnumerable<GameObject>
 {
 	public GameObject prefab;
 	public int initialAmount = 0;
@@ -71,4 +71,14 @@ public class Pool : MonoBehaviour
 				c++;
 		return c;
 	}
+
+    public IEnumerator<GameObject> GetEnumerator()
+    {
+        return ((IEnumerable<GameObject>)list).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)list).GetEnumerator();
+    }
 }
