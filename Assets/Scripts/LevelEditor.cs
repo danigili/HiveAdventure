@@ -22,6 +22,7 @@ public class LevelEditor : MonoBehaviour
     public Pool chainsPool;
 
     public PiecesPanel[] panels;
+    public Dropdown dropdown;
 
     private Board model;
 
@@ -33,6 +34,19 @@ public class LevelEditor : MonoBehaviour
     void Start()
     {
         selectedItem = null;
+        dropdown.options.Clear();
+        for (int i = 0; i < 2; i++)
+        {
+            foreach (BugType bug in Enum.GetValues(typeof(BugType)))
+            {
+                Dropdown.OptionData option1 = new Dropdown.OptionData();
+                option1.text = ( i == 0 ? "White" : "Black" ) + " " + bug.ToString();
+                dropdown.options.Add(option1);
+            }
+        }
+        Dropdown.OptionData option = new Dropdown.OptionData();
+        option.text = "(+) Add piece...";
+        dropdown.options.Add(option);
     }
 
     // Update is called once per frame
@@ -132,8 +146,13 @@ public class LevelEditor : MonoBehaviour
     }
 
     public void AddPiece(Dropdown dropdown)
-    { 
-    
+    {
+        if (dropdown.value == dropdown.options.Count - 1)
+            return;
+        model.CreateNewPiece(dropdown.value < 5 ? false : true, (BugType)(dropdown.value % 5));
+        dropdown.value = dropdown.options.Count - 1;
+        panels[0].Initialize(model, ClickPanelPiece);
+        panels[1].Initialize(model, ClickPanelPiece);
     }
 
     public void RemovePiece()

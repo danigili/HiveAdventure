@@ -5,11 +5,11 @@ using UnityEngine;
 
 public enum BugType 
 {
-	Queen,
-	Spider,
-	Beetle,
-	Grasshopper,
-	Ant
+	Queen = 0,
+	Spider = 1,
+	Beetle = 2,
+	Grasshopper = 3,
+	Ant = 4
 }
 
 [System.Serializable]

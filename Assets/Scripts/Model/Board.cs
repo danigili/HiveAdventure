@@ -699,6 +699,19 @@ public class Board
 		return value;
 	}
 
+	public void CreateNewPiece(bool side, BugType type)
+	{
+		int maxNumber = 0;
+		foreach (Piece p in notPlacedPieces)
+			if (p.side == side && p.type == type && p.number > maxNumber)
+				maxNumber = p.number;
+		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+			if (pair.Value.side == side && pair.Value.type == type && pair.Value.number > maxNumber)
+				maxNumber = pair.Value.number;
+		Piece newPiece = new Piece(side, type, maxNumber + 1);
+		notPlacedPieces.Add(newPiece);
+	}
+
 	public Board Clone()
 	{
 		Board sibling = new Board();

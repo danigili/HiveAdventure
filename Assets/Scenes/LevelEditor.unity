@@ -2768,6 +2768,7 @@ MonoBehaviour:
   panels:
   - {fileID: 50529679}
   - {fileID: 306438244}
+  dropdown: {fileID: 556745173}
 --- !u!4 &901963311
 Transform:
   m_ObjectHideFlags: 0
@@ -5540,7 +5541,7 @@ PrefabInstance:
     - target: {fileID: 2747834450863274357, guid: c253c2376288ab447a0674f0d6a6128f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -25.000061
+      value: -65
       objectReference: {fileID: 0}
     - target: {fileID: 2747834450863274357, guid: c253c2376288ab447a0674f0d6a6128f,
         type: 3}
