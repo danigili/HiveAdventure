@@ -1,0 +1,2 @@
+HELLO_WORLD=Hello world
+TEST=test english
