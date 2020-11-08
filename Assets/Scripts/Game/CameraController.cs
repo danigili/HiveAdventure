@@ -35,18 +35,22 @@ public class CameraController : MonoBehaviour
             transform.position = new Vector3(xCenter, height, yCenter - Mathf.Tan(Mathf.PI / 180 * (90 - transform.eulerAngles.x)) * height) ;
     }
 
-    public void SetCenter(float x, float y)
+    public void SetCenter(float x, float y, bool smooth = true)
     {
         xCenter = x;
         yCenter = y;
         position.x = x;
         position.y = height;
         position.z = y - Mathf.Tan(Mathf.PI /180 * (90-angle)) * height ;
+        if (!smooth)
+            transform.position = new Vector3(xCenter, height, yCenter - Mathf.Tan(Mathf.PI / 180 * (90 - transform.eulerAngles.x)) * height);
     }
 
-    public void SetSize(float size)
+    public void SetSize(float size, bool smooth = true)
     {
         this.size = size;
+        if (!smooth)
+            camera.orthographicSize = size;
     }
 
     // 60 or 90 degrees

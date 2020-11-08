@@ -24,10 +24,13 @@ public class GameMain : MonoBehaviour
     public GameObject integratedUI;
     public GameObject endPanel;
     private float endTimer = 0;
+    public GameObject settingsMenu;
+    public GameObject pauseMenu;
 
     // Start is called before the first frame update
     void Start()
     {
+        Localization.SetLanguage(Language.CA);
     }
 
     // Update is called once per frame
@@ -37,11 +40,6 @@ public class GameMain : MonoBehaviour
         UpdateStartMenu();
         UpdateEndOfGame();
         endTimer -= Time.deltaTime;
-    }
-
-    public void PauseClick()
-    {
-        StartCoroutine(RestartGame());
     }
 
     private IEnumerator RestartGame()
@@ -70,8 +68,8 @@ public class GameMain : MonoBehaviour
     {
         if (stage == Stage.Start || stage == Stage.Mode)
         {
-            camera.SetCenter(0, 0);
-            camera.SetSize(2.6f);
+            camera.SetCenter(0, 0, false);
+            camera.SetSize(2.6f, false);
         }
         else if (stage == Stage.Game)
         {
@@ -85,7 +83,6 @@ public class GameMain : MonoBehaviour
             else
             {
                 camera.SetCenter(1.558845f, 0);
-                camera.SetSize(5);
             }
         }
         camera.SetAngle(angle);
@@ -131,17 +128,63 @@ public class GameMain : MonoBehaviour
         }
     }
 
+    public void OpenSettings()
+    {
+        settingsMenu.SetActive(true);
+        settingsMenu.GetComponent<Animator>().SetBool("show", true);
+    }
+
+    public void CloseSettings()
+    {
+        settingsMenu.GetComponent<Animator>().SetBool("show", false);
+    }
+
+    public void Continue()
+    {
+        ClosePause();
+    }
+
+    public void Restart()
+    {
+        StartCoroutine(RestartGame());
+        ClosePause();
+    }
+
+    public void Exit()
+    {
+        integratedUI.GetComponent<Animator>().SetBool("show", true);
+        boardView.Clear();
+        ClosePause();
+        stage = Stage.Mode;
+    }
+
+    public void PauseClick()
+    {
+        OpenPause();
+    }
+
+    public void OpenPause()
+    {
+        pauseMenu.SetActive(true);
+        pauseMenu.GetComponent<Animator>().SetBool("show", true);
+    }
+
+    public void ClosePause()
+    {
+        pauseMenu.GetComponent<Animator>().SetBool("show", false);
+    }
+
     public void EndOfGame(Winner winner)
     {
         endPanel.SetActive(true);
         endPanel.GetComponent<Animator>().SetBool("show", true);
         if (winner == Winner.Black)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = "Black Wins";
+            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("BLACK_WINS");
         else if (winner == Winner.White)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = "White wins";
+            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("WHITE_WINS");
         else
-            endPanel.transform.Find("Text").GetComponent<Text>().text = "Draw";
-        
+            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("DRAW");
+
         stage = Stage.End;
         endTimer = 1;
     }

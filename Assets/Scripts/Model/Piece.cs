@@ -5,11 +5,11 @@ using UnityEngine;
 
 public enum BugType 
 {
-	Queen,
-	Spider,
-	Beetle,
-	Grasshopper,
-	Ant
+	Queen = 0,
+	Spider = 1,
+	Beetle = 2,
+	Grasshopper = 3,
+	Ant = 4
 }
 
 [System.Serializable]
@@ -18,6 +18,7 @@ public class Piece
 	public bool side;
 	public BugType type;
 	public int number;
+	public bool blocked;
 
 	[NonSerialized]
 	public Position position;
@@ -27,6 +28,7 @@ public class Piece
 		this.side = side;
 		this.type = type;
 		this.number = number;
+		this.blocked = false;
 		position = null;
 	}
 

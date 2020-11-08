@@ -11,6 +11,11 @@ public class HexObject : MonoBehaviour
     public static float distance = 1.8f;
     public static float height = 0.65f;
 
+    private void Update()
+    {
+        transform.position = GetWorldPosition();
+    }
+
     public void SetHexPosition(int x, int y, int z)
     {
         this.x = x;
@@ -23,6 +28,18 @@ public class HexObject : MonoBehaviour
         x = pos.x;
         y = pos.y;
         z = pos.z;
+    }
+
+    public void SetHexPosition(HexObject obj)
+    {
+        this.x = obj.x;
+        this.y = obj.y;
+        this.z = obj.z;
+    }
+
+    public Position GetHexPosition()
+    {
+        return new Position(x, y, z);
     }
 
     public Vector3 GetWorldPosition()

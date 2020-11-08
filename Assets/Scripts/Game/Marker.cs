@@ -1,23 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Marker : HexObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private Action<Marker> clickCallback;
 
-    // Update is called once per frame
-    void Update()
+    public void Initialize(Action<Marker> clickCallback)
     {
-        transform.position = GetWorldPosition();
+        this.clickCallback = clickCallback;
     }
 
     void OnMouseDown()
     {
-        transform.GetComponentInParent<BoardView>().ClickDownMarker(this);
+        clickCallback(this);
     }
 }

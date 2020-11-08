@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,26 +7,23 @@ public class PieceObject : HexObject
 {
     public Piece piece;
 
+    private Action<PieceObject> clickCallback;
 
     void Start()
     {
         
     }
 
-    void Update()
-    {
-        transform.position = GetWorldPosition();
-    }
-
     void OnMouseDown()
     {
-        transform.GetComponentInParent<BoardView>().ClickDown(this);
+        clickCallback(this);
     }
 
 
-    public void Initialize(Piece piece)
+    public void Initialize(Piece piece, Action<PieceObject> clickCallback)
     {
         this.piece = piece;
+        this.clickCallback = clickCallback;
         SetTexture();        
     }
 

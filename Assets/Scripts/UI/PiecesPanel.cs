@@ -114,11 +114,8 @@ public class PiecesPanel : MonoBehaviour
 
     private float Hieght()
     {
-        float hieght = -transform.GetChild(0).GetChild(transform.GetChild(0).childCount - 1).GetComponent<RectTransform>().anchoredPosition.y + yPanelMargin;
-        if (side)
-            return -hieght;
-        else
-            return hieght;
+        float hieght = -60;// -transform.GetChild(0).GetChild(transform.GetChild(0).childCount - 1).GetComponent<RectTransform>().anchoredPosition.y + yPanelMargin;
+        return side ? -hieght : hieght;
     }
 
     private void PanelPosition()

@@ -1,0 +1,6 @@
+﻿WHITE_WINS=GAnan\nnegras
+BLACK_WINS=Ganan\nblancas
+DRAW=Tablas
+ADVENTURE_MODE=Aventura
+QUICK_GAME_MODE=Partida\nRápida
+2_PLAYER_MODE=2\nJugadores
