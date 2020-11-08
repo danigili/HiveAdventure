@@ -24,6 +24,7 @@ public class GameMain : MonoBehaviour
     public GameObject integratedUI;
     public GameObject endPanel;
     private float endTimer = 0;
+    public GameObject settingsMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +43,8 @@ public class GameMain : MonoBehaviour
 
     public void PauseClick()
     {
-        StartCoroutine(RestartGame());
+        //StartCoroutine(RestartGame());
+        OpenSettings();
     }
 
     private IEnumerator RestartGame()
@@ -131,6 +133,18 @@ public class GameMain : MonoBehaviour
 
         }
     }
+
+    public void OpenSettings()
+    {
+        settingsMenu.SetActive(true);
+        settingsMenu.GetComponent<Animator>().SetBool("show", true);
+    }
+
+    public void CloseSettings()
+    {
+        settingsMenu.GetComponent<Animator>().SetBool("show", false);
+    }
+
 
     public void EndOfGame(Winner winner)
     {

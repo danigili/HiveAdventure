@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if (UNITY_EDITOR) 
 public class LevelEditor : MonoBehaviour
 {
     public TextAsset level;
@@ -258,3 +257,4 @@ public class LevelEditor : MonoBehaviour
         }
     }
 }
+#endif
