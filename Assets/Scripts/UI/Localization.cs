@@ -46,7 +46,8 @@ public class Localization
     {
         string result = null;
         if (!firstDictionary.TryGetValue(key, out result))
-            result = secondDictionary[key];
+            if (!secondDictionary.TryGetValue(key, out result))
+                Debug.LogError("Localization. Key [" + key + "]Not found");
         return result;
     }
 }

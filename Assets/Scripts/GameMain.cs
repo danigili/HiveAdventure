@@ -25,6 +25,7 @@ public class GameMain : MonoBehaviour
     public GameObject endPanel;
     private float endTimer = 0;
     public GameObject settingsMenu;
+    public GameObject pauseMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -39,12 +40,6 @@ public class GameMain : MonoBehaviour
         UpdateStartMenu();
         UpdateEndOfGame();
         endTimer -= Time.deltaTime;
-    }
-
-    public void PauseClick()
-    {
-        //StartCoroutine(RestartGame());
-        OpenSettings();
     }
 
     private IEnumerator RestartGame()
@@ -73,8 +68,8 @@ public class GameMain : MonoBehaviour
     {
         if (stage == Stage.Start || stage == Stage.Mode)
         {
-            camera.SetCenter(0, 0);
-            camera.SetSize(2.6f);
+            camera.SetCenter(0, 0, false);
+            camera.SetSize(2.6f, false);
         }
         else if (stage == Stage.Game)
         {
@@ -88,7 +83,6 @@ public class GameMain : MonoBehaviour
             else
             {
                 camera.SetCenter(1.558845f, 0);
-                camera.SetSize(5);
             }
         }
         camera.SetAngle(angle);
@@ -145,6 +139,40 @@ public class GameMain : MonoBehaviour
         settingsMenu.GetComponent<Animator>().SetBool("show", false);
     }
 
+    public void Continue()
+    {
+        ClosePause();
+    }
+
+    public void Restart()
+    {
+        StartCoroutine(RestartGame());
+        ClosePause();
+    }
+
+    public void Exit()
+    {
+        integratedUI.GetComponent<Animator>().SetBool("show", true);
+        boardView.Clear();
+        ClosePause();
+        stage = Stage.Mode;
+    }
+
+    public void PauseClick()
+    {
+        OpenPause();
+    }
+
+    public void OpenPause()
+    {
+        pauseMenu.SetActive(true);
+        pauseMenu.GetComponent<Animator>().SetBool("show", true);
+    }
+
+    public void ClosePause()
+    {
+        pauseMenu.GetComponent<Animator>().SetBool("show", false);
+    }
 
     public void EndOfGame(Winner winner)
     {
