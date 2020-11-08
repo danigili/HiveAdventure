@@ -1,2 +1,6 @@
-HELLO_WORLD=Hello world
-TEST=test english
+WHITE_WINS=White\nWins
+BLACK_WINS=Black\nWins
+DRAW=Draw
+ADVENTURE_MODE=Adventure
+QUICK_GAME_MODE=Quick\nGame
+2_PLAYER_MODE=2\nPlayer

@@ -1,1 +1,6 @@
-HELLO_WORLD=Hola mon
+﻿WHITE_WINS=Blanques\nguanyen
+BLACK_WINS=Negres\nguanyen
+DRAW=Empat
+ADVENTURE_MODE=Aventura
+QUICK_GAME_MODE=Partida\nRàpida
+2_PLAYER_MODE=2\nJugadors

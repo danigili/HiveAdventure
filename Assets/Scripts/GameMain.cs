@@ -137,12 +137,12 @@ public class GameMain : MonoBehaviour
         endPanel.SetActive(true);
         endPanel.GetComponent<Animator>().SetBool("show", true);
         if (winner == Winner.Black)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = "Black Wins";
+            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("BLACK_WINS");
         else if (winner == Winner.White)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = "White wins";
+            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("WHITE_WINS");
         else
-            endPanel.transform.Find("Text").GetComponent<Text>().text = "Draw";
-        
+            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("DRAW");
+
         stage = Stage.End;
         endTimer = 1;
     }

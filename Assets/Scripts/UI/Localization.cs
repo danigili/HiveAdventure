@@ -26,7 +26,7 @@ public class Localization
         {
             string[] pair = line.Split('=');
             if (pair.Length == 2)
-                dic.Add(pair[0], pair[1]);
+                dic.Add(pair[0], pair[1].Replace("\\n","\n"));
         }
         return dic;
     }
