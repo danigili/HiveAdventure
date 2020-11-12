@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LanguageSelector : MonoBehaviour
+public class FullScreenSelector : MonoBehaviour
 {
+
     public GameObject slider;
     public GameObject[] options;
 
@@ -13,7 +14,7 @@ public class LanguageSelector : MonoBehaviour
 
     void Start()
     {
-        SetOption((int)Localization.GetCurrentLanguage());
+        SetOption(Screen.fullScreen ? 1 : 0);
     }
 
     private void OnEnable()
@@ -31,6 +32,6 @@ public class LanguageSelector : MonoBehaviour
         sliderPos = options[index].transform.position;
         for (int i = 0; i < options.Length; i++)
             options[i].GetComponentInChildren<Text>().color = (i == index) ? Color.white : Color.black;
-        Localization.SetLanguage((Language)index);
+        Screen.fullScreen = (index == 1);
     }
 }
