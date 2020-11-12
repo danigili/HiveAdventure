@@ -13,7 +13,6 @@ public enum Language
 public class Localization
 {
     private static Language firstLanguage;
-    private static Language secondtLanguage;
     private static Dictionary<string, string> firstDictionary;
     private static Dictionary<string, string> secondDictionary;
 
@@ -33,6 +32,7 @@ public class Localization
 
     public static void SetLanguage(Language first, Language second = Language.EN)
     {
+        firstLanguage = first;
         firstDictionary = LoadLanguageFile(first);
         secondDictionary = LoadLanguageFile(second);
     }
