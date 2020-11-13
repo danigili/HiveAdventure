@@ -5,6 +5,8 @@ using UnityEngine;
 // This class represents a piece that behaves like a button in the interated 3D interface.
 public class IntegratedButton : MonoBehaviour
 {
+    public GameMode option;
+
     private float speed = 5f;
 
     // Start is called before the first frame update
@@ -30,8 +32,6 @@ public class IntegratedButton : MonoBehaviour
 
     private void OnMouseDown()
     {
-        StartCoroutine(GameObject.FindObjectOfType<GameMain>().IntegratedButtonClick("quick"));
-        
-        
+        StartCoroutine(GameObject.FindObjectOfType<GameMain>().IntegratedButtonClick(option));        
     }
 }

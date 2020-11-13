@@ -79,7 +79,7 @@ public class LevelEditor : MonoBehaviour
         rocksPool.ClearAll();
         chainsPool.ClearAll();
 
-        model = BoardSerialization.FromJson(level.text);
+        model = Serializer<Board>.FromJson(level.text);
 
         foreach (KeyValuePair<(int, int, int), Piece> pair in model.GetPlacedPieces())
         {
@@ -113,9 +113,9 @@ public class LevelEditor : MonoBehaviour
 
     public void SaveLevel()
     {
-        File.WriteAllText(AssetDatabase.GetAssetPath(level), BoardSerialization.ToJson(model));
+        File.WriteAllText(AssetDatabase.GetAssetPath(level), Serializer<Board>.ToJson(model));
         AssetDatabase.Refresh();// ..AddObjectToAsset(level, AssetDatabase.GetAssetPath(level));
-        Debug.Log(BoardSerialization.ToJson(model));
+        Debug.Log(Serializer<Board>.ToJson(model));
     }
 
     public void PlayButton()

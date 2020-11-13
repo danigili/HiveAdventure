@@ -13,7 +13,7 @@ namespace Tests
         public void BlackWinsOneMove()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test4.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             board.Initialize();
             AI.AIResult result = AI.FindBestMove(true, board, 0);
             board.MovePiece(result.move.piece, result.move.position);
@@ -24,7 +24,7 @@ namespace Tests
         public void WhiteWinsOneMove()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test4.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             board.Initialize();
             AI.AIResult result = AI.FindBestMove(false, board, 0);
             board.MovePiece(result.move.piece, result.move.position);

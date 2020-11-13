@@ -4,6 +4,13 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
+public enum GameMode
+{ 
+    Quick,
+    TwoPlayer,
+    Adventure
+}
+
 public class GameMain : MonoBehaviour
 {
     public enum Stage
@@ -12,6 +19,7 @@ public class GameMain : MonoBehaviour
         Mode,
         Game,
         Adventure,
+        AdventureMenu,
         Pause,
         End
     }
@@ -26,11 +34,13 @@ public class GameMain : MonoBehaviour
     private float endTimer = 0;
     public GameObject settingsMenu;
     public GameObject pauseMenu;
+    private AdventureMenu adventureMenu;
 
     // Start is called before the first frame update
     void Start()
     {
         Localization.SetLanguage(Language.CA);
+        adventureMenu = GetComponent<AdventureMenu>();
     }
 
     // Update is called once per frame
@@ -48,7 +58,7 @@ public class GameMain : MonoBehaviour
         {
             boardView.Clear();
             yield return new WaitForSeconds(1);
-            boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"), EndOfGame);
+            boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
         }
     }
 
@@ -85,6 +95,13 @@ public class GameMain : MonoBehaviour
                 camera.SetCenter(1.558845f, 0);
             }
         }
+        else if (stage == Stage.AdventureMenu)
+        {
+            float xMin, xMax, yMin, yMax;
+            adventureMenu.BoardSize(out xMin, out xMax, out yMin, out yMax);
+            camera.SetCenter((xMin + xMax) / 2, (yMin + yMax) / 2);
+            camera.SetSize(Mathf.Max(Mathf.Max(xMax - xMin, yMax - yMin) * 0.5f + 1f, +2));
+        }
         camera.SetAngle(angle);
     }
 
@@ -116,15 +133,31 @@ public class GameMain : MonoBehaviour
         }
     }
 
-    public IEnumerator IntegratedButtonClick(string option)
+    public IEnumerator IntegratedButtonClick(GameMode option)
     {
-        if (option == "quick")
+        if (option == GameMode.Quick)
         {
             integratedUI.GetComponent<Animator>().SetBool("show", false);
             yield return new WaitForSeconds(0.5f);
             stage = Stage.Game;
-            boardView.Initialize(BoardSerialization.FromFile("Text/Boards/new"), EndOfGame);
+            boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
+            boardView.ai2 = true;
 
+        }
+        else if (option == GameMode.Adventure)
+        {
+            integratedUI.GetComponent<Animator>().SetBool("show", false);
+            yield return new WaitForSeconds(0.5f);
+            stage = Stage.AdventureMenu;
+            adventureMenu.DrawButtons(0);
+        }
+        else if (option == GameMode.TwoPlayer)
+        {
+            integratedUI.GetComponent<Animator>().SetBool("show", false);
+            yield return new WaitForSeconds(0.5f);
+            stage = Stage.Game;
+            boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
+            boardView.ai2 = false;
         }
     }
 

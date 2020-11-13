@@ -13,7 +13,7 @@ namespace Tests
         public void LoadBoard()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test1.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Assert.IsTrue(board.GetPlacedPieces().ContainsKey((0, 0, 0)));
             Assert.AreEqual(board.GetPlacedPieces()[(0, 0, 0)].type, BugType.Ant);
         }
@@ -23,7 +23,7 @@ namespace Tests
         public void Cohesion()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test3.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Assert.IsFalse(board.IsBlocked(board.GetPiece(new Position( 0,  2, 0))));
             Assert.IsFalse(board.IsBlocked(board.GetPiece(new Position( 1,  1, 0))));
             Assert.IsTrue(board.IsBlocked(board.GetPiece( new Position( 0,  0, 0))));
@@ -44,7 +44,7 @@ namespace Tests
         public void WinCondition()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test4.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece ant1 = board.GetPiece(new Position(-1, -2, 0));
             Piece ant2 = board.GetPiece(new Position(1, 1, 0));
             Piece spider = board.GetPiece(new Position(1, 3, 0));
@@ -65,7 +65,7 @@ namespace Tests
         public void Queen()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test1.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece queen = board.GetPiece(new Position(-1, 0, 0));
             List<Position> movements = board.GetMovements(queen);
             Assert.IsFalse(movements.Contains(new Position(-1, -2, 0)));
@@ -79,7 +79,7 @@ namespace Tests
         public void Spider()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test2.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece spider = board.GetPiece(new Position(0, 2, 0));
             List<Position> movements = board.GetMovements(spider);
 
@@ -95,7 +95,7 @@ namespace Tests
         public void Beetle()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test1.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece beetle = board.GetPiece(new Position(-1, -1, 0));
             List<Position> movements = board.GetMovements(beetle);
             Assert.AreEqual(4, movements.Count);
@@ -119,7 +119,7 @@ namespace Tests
         public void Ant()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test3.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece ant = board.GetPiece(new Position(1, 1, 0));
             Assert.AreEqual(18, board.GetMovements(ant).Count);
         }
@@ -129,7 +129,7 @@ namespace Tests
         public void Grasshopper()
         {
             StreamReader reader = new StreamReader(resourcesPath + "test3.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece grasshopper = board.GetPiece(new Position(0, -5, 0));
             Assert.AreEqual(2, board.GetMovements(grasshopper).Count);
             board.MovePiece(grasshopper, (0, 1, 0));
@@ -151,7 +151,7 @@ namespace Tests
         {
             // Load an empty board
             StreamReader reader = new StreamReader(resourcesPath + "new.json");
-            Board board = BoardSerialization.FromJson(reader.ReadToEnd());
+            Board board = Serializer<Board>.FromJson(reader.ReadToEnd());
             Piece queen1 = board.GetPiece(false, BugType.Queen, 0);
             Piece ant1 = board.GetPiece(false, BugType.Ant, 0);
             

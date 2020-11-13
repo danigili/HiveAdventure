@@ -75,7 +75,7 @@ public class BoardView : MonoBehaviour
 
     public void Prueba2()
     {
-        Debug.Log(BoardSerialization.ToJson(model));
+        Debug.Log(Serializer<Board>.ToJson(model));
         DateTime inicio = DateTime.Now;
         for (int i = 0; i < 100000; i++)
             model.BreaksCohesion(model.GetPlacedPieces().First().Value);

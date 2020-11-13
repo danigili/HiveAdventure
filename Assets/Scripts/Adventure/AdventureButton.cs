@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class AdventureButton : HexObject
 {
@@ -13,7 +10,7 @@ public class AdventureButton : HexObject
 
     private float speed = 5f;
     private Action<AdventureButton> clickCallback;
-    private Text text;
+    private TextMesh text;
 
     void Update()
     {
@@ -22,12 +19,14 @@ public class AdventureButton : HexObject
         transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * speed);
     }
 
-    public void Initialize(int zone, int level, bool completed, bool available, Action<AdventureButton> clickCallback)
+    public void Initialize(int zone, int level, bool completed, bool available, Position position, Action<AdventureButton> clickCallback)
     {
+        text = transform.GetChild(0).GetComponent<TextMesh>();
         this.zone = zone;
         this.level = level;
         this.completed = completed;
         this.available = available;
+        this.SetHexPosition(position);
         this.clickCallback = clickCallback;
         SetTexture();
         text.text = zone + "-" + level;
@@ -35,6 +34,10 @@ public class AdventureButton : HexObject
             text.color = Color.black;
         else
             text.color = Color.white;
+        Vector3 pos = GetWorldPosition();
+        var random = new System.Random(DateTime.Now.Second + level + zone);
+        pos.y = random.Next()%100 + 20;
+        transform.position = pos;
     }
 
     private void SetTexture()
