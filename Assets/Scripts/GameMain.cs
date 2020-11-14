@@ -185,8 +185,11 @@ public class GameMain : MonoBehaviour
 
     public void Exit()
     {
+        if (stage == Stage.Game)
+            boardView.Clear();
+        else if (stage == Stage.AdventureMenu)
+            adventureMenu.Clear();
         integratedUI.GetComponent<Animator>().SetBool("show", true);
-        boardView.Clear();
         ClosePause();
         stage = Stage.Mode;
     }

@@ -33,8 +33,14 @@ public class AdventureMenu : MonoBehaviour
             AdventureButton button = buttons.GetInstance<AdventureButton>(true);
             Position pos;
             levelPos.TryGetValue((zone, i), out pos);
-            button.Initialize(zone, i, false, false, pos, ButtonClick);
+            button.Initialize(zone, i, false, true, pos, ButtonClick);
         }
+    }
+
+    public void Clear()
+    {
+        foreach (GameObject go in buttons)
+            go.GetComponent<AdventureButton>().Clear();
     }
 
     public void BoardSize(out float xMin, out float xMax, out float yMin, out float yMax)

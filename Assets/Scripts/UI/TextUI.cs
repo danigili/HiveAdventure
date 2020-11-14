@@ -15,6 +15,11 @@ public class TextUI : MonoBehaviour
     {
         gameObject.TryGetComponent<Text>(out textComponent);
         gameObject.TryGetComponent<TextMesh>(out textMesh);
+    }
+
+    private void OnEnable()
+    {
+
         SetText();
     }
 

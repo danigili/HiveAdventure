@@ -7,6 +7,7 @@ public class AdventureButton : HexObject
     public int level;
     public bool completed;
     public bool available;
+    public bool delete;
 
     private float speed = 5f;
     private Action<AdventureButton> clickCallback;
@@ -26,6 +27,7 @@ public class AdventureButton : HexObject
         this.level = level;
         this.completed = completed;
         this.available = available;
+        this.delete = false;
         this.SetHexPosition(position);
         this.clickCallback = clickCallback;
         SetTexture();
@@ -38,6 +40,11 @@ public class AdventureButton : HexObject
         var random = new System.Random(DateTime.Now.Second + level + zone);
         pos.y = random.Next()%100 + 20;
         transform.position = pos;
+    }
+
+    public void Clear()
+    {
+        gameObject.SetActive(false);
     }
 
     private void SetTexture()
