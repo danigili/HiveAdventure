@@ -32,6 +32,9 @@ public class GameMain : MonoBehaviour
     public GameObject integratedUI;
     public GameObject endPanel;
     private float endTimer = 0;
+    public GameObject settingsButton;
+    public GameObject pauseButton;
+    public GameObject cameraButton;
     public GameObject settingsMenu;
     public GameObject pauseMenu;
     private AdventureMenu adventureMenu;
@@ -49,6 +52,7 @@ public class GameMain : MonoBehaviour
         UpdateCameraPosition();
         UpdateStartMenu();
         UpdateEndOfGame();
+        UpdateButtons();
         endTimer -= Time.deltaTime;
     }
 
@@ -130,6 +134,48 @@ public class GameMain : MonoBehaviour
                 stage = Stage.Game;
                 StartCoroutine(RestartGame());
             }
+        }
+    }
+
+    private void UpdateButtons()
+    {
+        switch (stage)
+        {
+            case Stage.Start:
+                {
+                    settingsButton.SetActive(false);
+                    pauseButton.SetActive(false);
+                    cameraButton.SetActive(false);
+                    break;
+                }
+            case Stage.Mode:
+                {
+                    settingsButton.SetActive(true);
+                    pauseButton.SetActive(false);
+                    cameraButton.SetActive(true);
+                    break;
+                }
+            case Stage.Game:
+                {
+                    settingsButton.SetActive(false);
+                    pauseButton.SetActive(true);
+                    cameraButton.SetActive(true);
+                    break;
+                }
+            case Stage.Adventure:
+                {
+                    settingsButton.SetActive(false);
+                    pauseButton.SetActive(true);
+                    cameraButton.SetActive(true);
+                    break;
+                }
+            case Stage.AdventureMenu:
+                {
+                    settingsButton.SetActive(true);
+                    pauseButton.SetActive(false);
+                    cameraButton.SetActive(true);
+                    break;
+                }
         }
     }
 
