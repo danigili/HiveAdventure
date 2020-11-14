@@ -38,12 +38,16 @@ public class GameMain : MonoBehaviour
     public GameObject settingsMenu;
     public GameObject pauseMenu;
     private AdventureMenu adventureMenu;
+    private AudioSource audioSource;
+    public GameObject adventureCanvas;
+    public AudioClip[] startClips;
 
     // Start is called before the first frame update
     void Start()
     {
         Localization.SetLanguage(Language.CA);
         adventureMenu = GetComponent<AdventureMenu>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -54,6 +58,7 @@ public class GameMain : MonoBehaviour
         UpdateEndOfGame();
         UpdateButtons();
         endTimer -= Time.deltaTime;
+        UnityEngine.Random.seed = System.DateTime.Now.Millisecond;
     }
 
     private IEnumerator RestartGame()
@@ -61,6 +66,7 @@ public class GameMain : MonoBehaviour
         if (stage == Stage.Game)
         {
             boardView.Clear();
+            audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
             yield return new WaitForSeconds(1);
             boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
         }
@@ -186,6 +192,7 @@ public class GameMain : MonoBehaviour
             integratedUI.GetComponent<Animator>().SetBool("show", false);
             yield return new WaitForSeconds(0.5f);
             stage = Stage.Game;
+            audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
             boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
             boardView.ai2 = true;
 
@@ -195,13 +202,17 @@ public class GameMain : MonoBehaviour
             integratedUI.GetComponent<Animator>().SetBool("show", false);
             yield return new WaitForSeconds(0.5f);
             stage = Stage.AdventureMenu;
+            adventureCanvas.SetActive(true);
+            adventureCanvas.GetComponent<Animator>().SetBool("show", true);
             adventureMenu.DrawButtons(0);
+            stage = Stage.AdventureMenu;
         }
         else if (option == GameMode.TwoPlayer)
         {
             integratedUI.GetComponent<Animator>().SetBool("show", false);
             yield return new WaitForSeconds(0.5f);
             stage = Stage.Game;
+            audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
             boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
             boardView.ai2 = false;
         }
@@ -234,7 +245,10 @@ public class GameMain : MonoBehaviour
         if (stage == Stage.Game)
             boardView.Clear();
         else if (stage == Stage.AdventureMenu)
+        {
             adventureMenu.Clear();
+            adventureCanvas.GetComponent<Animator>().SetBool("show", false);
+        }
         integratedUI.GetComponent<Animator>().SetBool("show", true);
         ClosePause();
         stage = Stage.Mode;

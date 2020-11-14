@@ -1,12 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System;
-using FullSerializer;
-using System.Xml.Schema;
-using UnityEditor;
 
+[RequireComponent(typeof(AudioSource))]
 public class BoardView : MonoBehaviour
 {
     public Pool piecesPool;
@@ -22,8 +20,10 @@ public class BoardView : MonoBehaviour
     public bool currentSide=false;
     private Action<Winner> endCallback;
     private bool finished = false;
+    private AudioSource audioSource;
+    public AudioClip[] soundArray;
 
-
+    
     public void Initialize(Board board, Action<Winner> endCallback, bool side = false)
     {
         this.model = board;
@@ -57,7 +57,9 @@ public class BoardView : MonoBehaviour
         panels[0].Initialize(model, ClickPanelPiece);
         panels[1].Initialize(model, ClickPanelPiece);
         panels[0].transform.parent.GetComponent<Animator>().SetBool("show", true);
-        
+
+        audioSource = GetComponent<AudioSource>();
+
         markersPool.ClearAll();
         selectedPiece = null;
         selectedUIPiece = null;
@@ -97,6 +99,7 @@ public class BoardView : MonoBehaviour
             if (po.piece.Equals(ai.move.piece) && po.gameObject.activeSelf)
             {
                 model.MovePiece(ai.move.piece, ai.move.position);
+                audioSource.PlayOneShot(soundArray[UnityEngine.Random.Range(0, soundArray.Length - 1)]);
                 Position newPos = model.GetPiecePosition(po.piece);
                 po.SetHexPosition(ai.move.position.x, ai.move.position.y, ai.move.position.z);
                 selectedPiece = null;
@@ -113,6 +116,7 @@ public class BoardView : MonoBehaviour
                 if (pui.piece.Equals(ai.move.piece))
                 {
                     model.MovePiece(ai.move.piece, ai.move.position);
+                    audioSource.PlayOneShot(soundArray[UnityEngine.Random.Range(0, soundArray.Length - 1)]);
                     GameObject instance = piecesPool.GetInstance(true);
                     instance.GetComponent<PieceObject>().Initialize(ai.move.piece, ClickDown);
                     instance.GetComponent<PieceObject>().SetHexPosition(model.GetPiecePosition(ai.move.piece));
@@ -192,6 +196,7 @@ public class BoardView : MonoBehaviour
         if (selectedPiece != null)
         {
             model.MovePiece(selectedPiece.piece, (marker.x, marker.y, marker.z));
+            audioSource.PlayOneShot(soundArray[UnityEngine.Random.Range(0, soundArray.Length - 1)]);
             Position newPos = model.GetPiecePosition(selectedPiece.piece);
             selectedPiece.SetHexPosition(newPos.x, newPos.y, newPos.z);
             selectedPiece = null;
@@ -203,6 +208,7 @@ public class BoardView : MonoBehaviour
             else
                 panels[0].RemovePiece(selectedUIPiece);
             model.MovePiece(selectedUIPiece.piece, (marker.x, marker.y, marker.z));
+            audioSource.PlayOneShot(soundArray[UnityEngine.Random.Range(0, soundArray.Length - 1)]);
             Position newPos = model.GetPiecePosition(selectedUIPiece.piece);
             GameObject instance = piecesPool.GetInstance(true);
             instance.GetComponent<PieceObject>().Initialize(selectedUIPiece.piece, ClickDown);
