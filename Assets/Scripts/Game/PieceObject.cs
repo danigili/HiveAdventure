@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PieceObject : HexObject
 {
@@ -16,6 +17,9 @@ public class PieceObject : HexObject
 
     void OnMouseDown()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         clickCallback(this);
     }
 

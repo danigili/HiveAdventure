@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class AdventureButton : HexObject
 {
@@ -31,7 +32,7 @@ public class AdventureButton : HexObject
         this.SetHexPosition(position);
         this.clickCallback = clickCallback;
         SetTexture();
-        text.text = zone + "-" + level;
+        text.text = (zone+1) + "-" + (level+1);
         if (completed || available)
             text.color = Color.black;
         else
@@ -59,6 +60,9 @@ public class AdventureButton : HexObject
 
     private void OnMouseOver()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         if (available)
         {
             Vector3 pos = transform.position;
@@ -69,6 +73,9 @@ public class AdventureButton : HexObject
 
     private void OnMouseDown()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         if (available)
             clickCallback(this);
     }

@@ -28,13 +28,27 @@ public class AdventureMenu : MonoBehaviour
     {
         this.zone = zone;
         buttons.ClearAll();
-        for (int i = 0; i < 6; i++)
+        for (int z = 0; z < 2; z++)
         {
-            AdventureButton button = buttons.GetInstance<AdventureButton>(true);
-            Position pos;
-            levelPos.TryGetValue((zone, i), out pos);
-            button.Initialize(zone, i, false, true, pos, ButtonClick);
+            for (int i = 0; i < 6; i++)
+            {
+                AdventureButton button = buttons.GetInstance<AdventureButton>(true);
+                Position pos;
+                levelPos.TryGetValue((z, i), out pos);
+                button.Initialize(z, i, false, true, pos, ButtonClick);
+            }
         }
+    }
+
+    public void ZoneUp()
+    {
+        zone++;
+    }
+
+    public void ZoneDown()
+    {
+        zone--;
+        if (zone < 0) zone = 0;
     }
 
     public void Clear()
@@ -52,10 +66,13 @@ public class AdventureMenu : MonoBehaviour
 
         foreach (GameObject ho in buttons)
         {
-            xMin = Math.Min(xMin, ho.transform.position.x);
-            xMax = Math.Max(xMax, ho.transform.position.x);
-            yMin = Math.Min(yMin, ho.transform.position.z);
-            yMax = Math.Max(yMax, ho.transform.position.z);
+            if (ho.GetComponent<AdventureButton>().zone == this.zone)
+            {
+                xMin = Math.Min(xMin, ho.transform.position.x);
+                xMax = Math.Max(xMax, ho.transform.position.x);
+                yMin = Math.Min(yMin, ho.transform.position.z);
+                yMax = Math.Max(yMax, ho.transform.position.z);
+            }
         }
     }
 

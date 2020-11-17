@@ -204,7 +204,7 @@ public class GameMain : MonoBehaviour
             stage = Stage.AdventureMenu;
             adventureCanvas.SetActive(true);
             adventureCanvas.GetComponent<Animator>().SetBool("show", true);
-            adventureMenu.DrawButtons(0);
+            adventureMenu.DrawButtons(1);
             stage = Stage.AdventureMenu;
         }
         else if (option == GameMode.TwoPlayer)
