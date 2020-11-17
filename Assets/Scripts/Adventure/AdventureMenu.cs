@@ -10,9 +10,12 @@ public class AdventureMenu : MonoBehaviour
     public Pool buttons;
 
     private int zone;
+    private int maxZone;
+    private SaveGame save;
 
     private void Start()
     {
+        save = SaveGame.GetInstance();
         levelPos = Serializer<Dictionary<(int, int), Position>>.FromFile("Adventure/ButtonsPosition");
         //StartCoroutine(Prueba());
     }
@@ -28,14 +31,22 @@ public class AdventureMenu : MonoBehaviour
     {
         this.zone = zone;
         buttons.ClearAll();
-        for (int z = 0; z < 2; z++)
+        maxZone = 10;
+        bool completed = true;
+        for (int z = 0; z <= maxZone; z++)
         {
             for (int i = 0; i < 6; i++)
             {
-                AdventureButton button = buttons.GetInstance<AdventureButton>(true);
                 Position pos;
-                levelPos.TryGetValue((z, i), out pos);
-                button.Initialize(z, i, false, true, pos, ButtonClick);
+                if (!levelPos.TryGetValue((z, i), out pos))
+                {
+                    maxZone = z-1;
+                    break;
+                }
+
+                AdventureButton button = buttons.GetInstance<AdventureButton>(true);
+                button.Initialize(z, i, save.IsLevelCompleted(z,i), completed, pos, ButtonClick);
+                completed = save.IsLevelCompleted(z, i);
             }
         }
     }
@@ -43,6 +54,7 @@ public class AdventureMenu : MonoBehaviour
     public void ZoneUp()
     {
         zone++;
+        if (zone > maxZone) zone = maxZone;
     }
 
     public void ZoneDown()
@@ -77,7 +89,8 @@ public class AdventureMenu : MonoBehaviour
     }
 
     public void ButtonClick(AdventureButton button)
-    { 
-        
+    {
+        save.LevelCompleted(button.zone, button.level);
+        DrawButtons(0);
     }
 }
