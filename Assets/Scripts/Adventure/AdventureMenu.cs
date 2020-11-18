@@ -2,9 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AdventureMenu : MonoBehaviour
 {
+    public Text progressText;
+
     public Dictionary<(int, int), Position> levelPos;
 
     public Pool buttons;
@@ -49,6 +52,7 @@ public class AdventureMenu : MonoBehaviour
                 completed = save.IsLevelCompleted(z, i);
             }
         }
+        progressText.text = GetProgress();
     }
 
     public void ZoneUp()
@@ -86,6 +90,17 @@ public class AdventureMenu : MonoBehaviour
                 yMax = Math.Max(yMax, ho.transform.position.z);
             }
         }
+    }
+
+    public String GetProgress()
+    {
+        int completedLevels = 0;
+        for (int z = 0; z <= maxZone; z++)
+            for (int i = 0; i < 6; i++)
+                if (save.IsLevelCompleted(z, i))
+                    completedLevels++;
+
+        return  String.Format("{0:0}%", completedLevels / ((maxZone + 1f) * 6f) *100f);
     }
 
     public void ButtonClick(AdventureButton button)
