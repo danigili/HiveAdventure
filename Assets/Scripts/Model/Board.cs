@@ -41,6 +41,10 @@ public class Board
 	private bool queen2Placed = false;
 	[NonSerialized]
 	public bool side = false;
+	[NonSerialized]
+	private Piece queen1;
+	[NonSerialized]
+	private Piece queen2; 
 
 	public Board()
 	{
@@ -66,9 +70,15 @@ public class Board
 			if (pair.Value.type == BugType.Queen)
 			{
 				if (!pair.Value.side)
+				{
 					queen1Placed = true;
+					queen1 = pair.Value;
+				}
 				else
+				{
 					queen2Placed = true;
+					queen2 = pair.Value;
+				}
 			}
 		}
 	}
@@ -92,19 +102,14 @@ public class Board
 	{
 		bool whiteLoses = false;
 		bool blackLoses = false;
-		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
-		{
-			if (pair.Value.type == BugType.Queen)
-			{
-				if (!GetNeighbors(GetPiecePosition(pair.Value)).Contains(null))
-				{
-					if (pair.Value.side)
-						blackLoses = true;
-					else
-						whiteLoses = true;
-				}
-			}
-		}
+
+		if (queen2 != null)
+			if (!GetNeighbors(GetPiecePosition(queen2)).Contains(null))
+				blackLoses = true;
+		if (queen1 != null)
+			if (!GetNeighbors(GetPiecePosition(queen1)).Contains(null))
+			whiteLoses = true;
+
 		if (!blackLoses && !whiteLoses)
 			return Winner.None;
 		if (blackLoses && whiteLoses)
@@ -215,6 +220,7 @@ public class Board
 
 			if (visitedPieces.Contains(piece.type))
 				continue;
+			visitedPieces.Add(piece.type);
 
 			if (!queenPlaced && (turns >= 6) && piece.type != BugType.Queen)
 				continue;
@@ -672,29 +678,33 @@ public class Board
 	public int EvaluateBoard()
 	{
 		int value = 0;
-		foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
+		int neighbors = 0;
+		if (queen2 != null)
 		{
-			if (pair.Value.type == BugType.Queen)
+			foreach (Position p in GetNeighbors(GetPiecePosition(queen2)))
+				if (p != null)
+					neighbors++;
+			if (neighbors == 6)
+				value -= 10000;
+			else
+				value -= 10 * neighbors;
+			if (IsBlocked(queen2))
+				value += 5;
+		}
+		if (queen1 != null)
+		{
+			neighbors = 0;
+			foreach (Position p in GetNeighbors(GetPiecePosition(queen1)))
 			{
-				int neighbors = 0;
-				foreach (Position p in GetNeighbors(GetPiecePosition(pair.Value)))
-					if (p!=null)
-						neighbors++; 
-				if (pair.Value.side)
-				{
-					if (neighbors == 6)
-                        value -= 1000;
-					else
-						value -= neighbors;
-				}
+				if (p != null)
+					neighbors++;
+				if (neighbors == 6)
+					value += 10000;
 				else
-				{
-					if (neighbors == 6)
-						value += 1000;
-					else
-						value += neighbors;
-				}
+					value += 10 * neighbors;
 			}
+			if (IsBlocked(queen1))
+				value -= 5;
 		}
 		return value;
 	}
