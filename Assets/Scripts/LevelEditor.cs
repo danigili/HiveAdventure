@@ -26,8 +26,8 @@ public class LevelEditor : MonoBehaviour
     private Board model;
 
     private bool editMode = true;
-    private HexObject selectedItem;
-    private PieceUI selectedUIPiece;
+    public HexObject selectedItem;
+    public PieceUI selectedUIPiece;
 
     // Start is called before the first frame update
     void Start()
@@ -176,7 +176,7 @@ public class LevelEditor : MonoBehaviour
                     }
                     selectedItem = null;
                 }
-                else if (!model.IsBlocked(((PieceObject)selectedItem).piece))
+                else
                 {
                     model.GetPlacedPieces().Remove((selectedItem.GetHexPosition().x, selectedItem.GetHexPosition().y, selectedItem.GetHexPosition().z));
                     selectedItem.gameObject.SetActive(false);
@@ -195,6 +195,16 @@ public class LevelEditor : MonoBehaviour
     {
         selectedUIPiece = piece;
         selectedItem = null;
+        markersPool.ClearAll();
+        for (int i = -4; i < 4; i++)
+        {
+            for (int j = -8; j < 8; j++)
+            {
+                Marker marker = markersPool.GetInstance<Marker>(true);
+                marker.SetHexPosition(i, j, 0);
+                marker.Initialize(ClickDown);
+            }
+        }
     }
 
     public void ClickDown(HexObject piece)
@@ -202,13 +212,29 @@ public class LevelEditor : MonoBehaviour
         if (typeof(Marker) == piece.GetType())
         {
             // Add the rock to the board and place object
-            if (selectedItem != null & selectedItem.GetComponent<RockObject>() != null)
+            RockObject tmp;
+            if (selectedItem != null)
             {
-                model.GetBlockedPositions().Add(piece.GetHexPosition());
-                selectedItem.SetHexPosition(piece);
-                selectedItem.gameObject.SetActive(true);
-                selectedItem = null;
+                if (selectedItem.TryGetComponent<RockObject>(out tmp))
+                {
+                    model.GetBlockedPositions().Add(piece.GetHexPosition());
+                    selectedItem.SetHexPosition(piece);
+                    selectedItem.gameObject.SetActive(true);
+                    selectedItem = null;
+                    markersPool.ClearAll();
+                }
+            }
+            else if (selectedUIPiece != null)
+            {
+                model.GetNotPlacedPieces().Remove(selectedUIPiece.piece);
+                model.GetPlacedPieces().Add((piece.x, piece.y, piece.z), selectedUIPiece.piece);
+                panels[0].RemovePiece(selectedUIPiece);
+                panels[1].RemovePiece(selectedUIPiece);
                 markersPool.ClearAll();
+                GameObject instance = piecesPool.GetInstance(true);
+                instance.GetComponent<PieceObject>().Initialize(selectedUIPiece.piece, ClickDown);
+                instance.GetComponent<PieceObject>().SetHexPosition(piece);
+                selectedUIPiece = null;
             }
         }
         else if (typeof(RockObject) == piece.GetType())

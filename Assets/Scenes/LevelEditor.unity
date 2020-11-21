@@ -2757,7 +2757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f4c656178dcf1b469f5fa0b810edf07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: {fileID: 4900000, guid: 6cf3b9143e149aa429933ac8ebf9f932, type: 3}
+  level: {fileID: 4900000, guid: f2ee712c5f47f2b469775f916494b206, type: 3}
   camera: {fileID: 963194229}
   levelTypeToggle: {fileID: 207501400}
   maxTurnsInputField: {fileID: 42430964}
@@ -2769,6 +2769,8 @@ MonoBehaviour:
   - {fileID: 50529679}
   - {fileID: 306438244}
   dropdown: {fileID: 556745173}
+  selectedItem: {fileID: 0}
+  selectedUIPiece: {fileID: 0}
 --- !u!4 &901963311
 Transform:
   m_ObjectHideFlags: 0
@@ -4615,7 +4617,7 @@ PrefabInstance:
     - target: {fileID: 2747834450863274357, guid: c253c2376288ab447a0674f0d6a6128f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 25.000061
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 2747834450863274357, guid: c253c2376288ab447a0674f0d6a6128f,
         type: 3}
