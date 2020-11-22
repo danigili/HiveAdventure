@@ -22,8 +22,9 @@ public class BoardView : MonoBehaviour
     private bool finished = false;
     private AudioSource audioSource;
     public AudioClip[] soundArray;
-
-    
+    public int turnsCounter;
+    public Hourglass hourglass;
+        
     public void Initialize(Board board, Action<Winner> endCallback, bool side = false)
     {
         this.model = board;
@@ -32,7 +33,7 @@ public class BoardView : MonoBehaviour
         this.finished = false;
         Dictionary<(int, int, int), Piece>  placedPieces = model.GetPlacedPieces();
         List<Piece> notPlacedPieces = model.GetNotPlacedPieces();
-        
+        turnsCounter = 5;
         piecesPool.ClearAll();
         foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
         {
@@ -57,6 +58,7 @@ public class BoardView : MonoBehaviour
         panels[0].Initialize(model, ClickPanelPiece);
         panels[1].Initialize(model, ClickPanelPiece);
         panels[0].transform.parent.GetComponent<Animator>().SetBool("show", true);
+        hourglass.gameObject.SetActive(true);
 
         audioSource = GetComponent<AudioSource>();
 
@@ -71,6 +73,7 @@ public class BoardView : MonoBehaviour
         panels[0].transform.parent.GetComponent<Animator>().SetBool("show", false);
         piecesPool.ClearAll();
         markersPool.ClearAll();
+        hourglass.gameObject.SetActive(false);
         selectedPiece = null;
         selectedUIPiece = null;
     }
@@ -234,6 +237,21 @@ public class BoardView : MonoBehaviour
 
         // Change player
         currentSide = !currentSide;
+
+        // In adventure mode, decrement turns counter
+        if (currentSide)
+        {
+            turnsCounter--;
+            hourglass.SetValue(turnsCounter);
+        }
+
+        // If counter == 0, end game
+        if (turnsCounter == 0)
+        {
+            finished = true;
+            endCallback(Winner.None);
+            return;
+        }
 
         // If player cannot move, pass the turn to the other player
         if (!model.CanTakeTurn(currentSide))
