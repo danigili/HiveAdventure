@@ -98,6 +98,11 @@ public class Board
 		return blockedPositions;
 	}
 
+	public int GetMaxTurns()
+	{
+		return maxTurns;
+	}
+
 	public Winner CheckEndCondition()
 	{
 		bool whiteLoses = false;

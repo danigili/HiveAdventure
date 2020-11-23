@@ -17,6 +17,7 @@ public class AdventureMenu : MonoBehaviour
     private int maxZone;
     private SaveGame save;
     private BoardView boardView;
+    private Action<int, int> callback;
 
 
     private void Start()
@@ -26,9 +27,10 @@ public class AdventureMenu : MonoBehaviour
         boardView = gameObject.GetComponent<BoardView>();
     }
 
-    public void DrawButtons(int zone)
+    public void DrawButtons(int zone, Action<int, int> callback)
     {
         this.zone = zone;
+        this.callback = callback;
         buttons.ClearAll();
         maxZone = 10;
         bool completed = true;
@@ -102,20 +104,9 @@ public class AdventureMenu : MonoBehaviour
     public void ButtonClick(AdventureButton button)
     {
         //save.LevelCompleted(button.zone, button.level);
-        boardView.Initialize(Serializer<Board>.FromFile("Adventure/Levels/Zone" + button.zone + "/Level" + button.level), EndOfGame);
-        
+        buttons.ClearAll();
+        callback(button.zone, button.level);
+        //boardView.Initialize(Serializer<Board>.FromFile("Adventure/Levels/Zone" + button.zone + "/Level" + button.level), EndOfGame);
     }
 
-    public void EndOfGame(Winner winner)
-    {
-        endPanel.SetActive(true);
-        endPanel.GetComponent<Animator>().SetBool("show", true);
-        if (winner == Winner.Black)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("BLACK_WINS");
-        else if (winner == Winner.White)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("WHITE_WINS");
-        else
-            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("DRAW");
-
-    }
 }

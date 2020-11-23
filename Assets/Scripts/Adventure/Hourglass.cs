@@ -9,15 +9,19 @@ public class Hourglass : MonoBehaviour
     private Text text;
     public int value = 0;
 
-    private void Start()
+    private void OnEnable()
     {
         text = GetComponentInChildren<Text>();
+        text.text = value.ToString();
     }
 
-    public void SetValue(int value)
+    public void SetValue(int value, bool anim = true)
     {
         this.value = value;
-        GetComponent<Animator>().SetTrigger("trigger");
+        if (anim)
+            GetComponent<Animator>().SetTrigger("trigger");     
+        else
+            text.text = value.ToString();
     }
 
     public void Trigger()

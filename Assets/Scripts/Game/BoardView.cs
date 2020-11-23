@@ -24,16 +24,27 @@ public class BoardView : MonoBehaviour
     public AudioClip[] soundArray;
     public int turnsCounter;
     public Hourglass hourglass;
-        
+
     public void Initialize(Board board, Action<Winner> endCallback, bool side = false)
     {
         this.model = board;
         this.currentSide = side;
         this.endCallback = endCallback;
         this.finished = false;
-        Dictionary<(int, int, int), Piece>  placedPieces = model.GetPlacedPieces();
+        Dictionary<(int, int, int), Piece> placedPieces = model.GetPlacedPieces();
         List<Piece> notPlacedPieces = model.GetNotPlacedPieces();
-        turnsCounter = 5;
+
+        turnsCounter = board.GetMaxTurns();
+        if (turnsCounter > 0)
+        {
+            hourglass.gameObject.SetActive(true);
+            hourglass.SetValue(turnsCounter, false);
+        }
+        else
+        {
+            turnsCounter = -1;
+        }
+
         piecesPool.ClearAll();
         foreach (KeyValuePair<(int, int, int), Piece> pair in placedPieces)
         {
@@ -58,8 +69,7 @@ public class BoardView : MonoBehaviour
         panels[0].Initialize(model, ClickPanelPiece);
         panels[1].Initialize(model, ClickPanelPiece);
         panels[0].transform.parent.GetComponent<Animator>().SetBool("show", true);
-        hourglass.gameObject.SetActive(true);
-
+       
         audioSource = GetComponent<AudioSource>();
 
         markersPool.ClearAll();

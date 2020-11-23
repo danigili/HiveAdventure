@@ -20,6 +20,8 @@ public class GameMain : MonoBehaviour
         Game,
         Adventure,
         AdventureMenu,
+        AdventureWin,
+        AdventureFail,
         Pause,
         End
     }
@@ -41,6 +43,9 @@ public class GameMain : MonoBehaviour
     private AudioSource audioSource;
     public GameObject adventureCanvas;
     public AudioClip[] startClips;
+    private int currentZone;
+    private int currentLevel;
+    private bool smoothCamera;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +53,7 @@ public class GameMain : MonoBehaviour
         Localization.SetLanguage(Language.CA);
         adventureMenu = GetComponent<AdventureMenu>();
         audioSource = GetComponent<AudioSource>();
+        smoothCamera = true;
     }
 
     // Update is called once per frame
@@ -68,7 +74,17 @@ public class GameMain : MonoBehaviour
             boardView.Clear();
             audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
             yield return new WaitForSeconds(1);
-            boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
+            //boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
+            boardView.Initialize(Serializer<Board>.FromFile("Adventure/Levels/Zone0/Level1"), EndOfGame);
+        }
+        if (stage == Stage.Adventure)
+        {
+            boardView.Clear();
+            audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
+            yield return new WaitForSeconds(1);
+            smoothCamera = false;
+            boardView.Initialize(Serializer<Board>.FromFile("Adventure/Levels/Zone"+currentZone.ToString()+"/Level"+currentLevel.ToString()), EndOfGame);
+            smoothCamera = false;
         }
     }
 
@@ -105,6 +121,17 @@ public class GameMain : MonoBehaviour
                 camera.SetCenter(1.558845f, 0);
             }
         }
+        else if (stage == Stage.Adventure)
+        {
+            if (boardView != null)
+            {
+                float xMin, xMax, yMin, yMax;
+                boardView.BoardSize(out xMin, out xMax, out yMin, out yMax);
+                camera.SetCenter((xMin + xMax) / 2, (yMin + yMax) / 2, smoothCamera);
+                camera.SetSize(Mathf.Max(Mathf.Max(xMax - xMin, yMax - yMin) * 0.5f + 1f, +5), smoothCamera);
+                if (boardView.piecesPool.Count() > 0) smoothCamera = true;
+            }
+        }
         else if (stage == Stage.AdventureMenu)
         {
             float xMin, xMax, yMin, yMax;
@@ -132,13 +159,27 @@ public class GameMain : MonoBehaviour
 
     private void UpdateEndOfGame()
     {
-        if (stage == Stage.End && endTimer < 0)
+        if (endTimer < 0)
         {
             if (Input.anyKeyDown || Input.GetMouseButtonDown(0))
             {
                 endPanel.GetComponent<Animator>().SetBool("show", false);
-                stage = Stage.Game;
-                StartCoroutine(RestartGame());
+                if (stage == Stage.End)
+                {
+                    stage = Stage.Game;
+                    StartCoroutine(RestartGame());
+                }
+                if (stage == Stage.AdventureFail)
+                {
+                    
+                    stage = Stage.Adventure;
+                    StartCoroutine(RestartGame());
+                }
+                if (stage == Stage.AdventureWin)
+                {
+                    stage = Stage.Adventure;
+                    // TODO: Go to adventure menu                    
+                }
             }
         }
     }
@@ -204,7 +245,7 @@ public class GameMain : MonoBehaviour
             stage = Stage.AdventureMenu;
             adventureCanvas.SetActive(true);
             adventureCanvas.GetComponent<Animator>().SetBool("show", true);
-            adventureMenu.DrawButtons(1);
+            adventureMenu.DrawButtons(1, StartAdventureLevel);
             stage = Stage.AdventureMenu;
         }
         else if (option == GameMode.TwoPlayer)
@@ -243,15 +284,28 @@ public class GameMain : MonoBehaviour
     public void Exit()
     {
         if (stage == Stage.Game)
+        {
             boardView.Clear();
+            integratedUI.GetComponent<Animator>().SetBool("show", true);
+            stage = Stage.Mode;
+        }
         else if (stage == Stage.AdventureMenu)
         {
             adventureMenu.Clear();
             adventureCanvas.GetComponent<Animator>().SetBool("show", false);
+            integratedUI.GetComponent<Animator>().SetBool("show", true);
+            stage = Stage.Mode;
         }
-        integratedUI.GetComponent<Animator>().SetBool("show", true);
+        else if (stage == Stage.Adventure)
+        {
+            boardView.Clear();
+            adventureCanvas.GetComponent<Animator>().SetBool("show", true);
+            adventureMenu.DrawButtons(1, StartAdventureLevel);
+            stage = Stage.AdventureMenu;
+        }
+       
         ClosePause();
-        stage = Stage.Mode;
+        
     }
 
     public void PauseClick()
@@ -270,18 +324,48 @@ public class GameMain : MonoBehaviour
         pauseMenu.GetComponent<Animator>().SetBool("show", false);
     }
 
+    public void StartAdventureLevel(int zone, int level)
+    {
+        currentZone = zone;
+        currentLevel = level;
+        adventureCanvas.GetComponent<Animator>().SetBool("show", false);
+        boardView.ai2 = true;
+        stage = Stage.Adventure;
+        smoothCamera = false;
+        StartCoroutine(RestartGame());
+    }
+
     public void EndOfGame(Winner winner)
     {
-        endPanel.SetActive(true);
-        endPanel.GetComponent<Animator>().SetBool("show", true);
-        if (winner == Winner.Black)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("BLACK_WINS");
-        else if (winner == Winner.White)
-            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("WHITE_WINS");
-        else
-            endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("DRAW");
+        if (stage == Stage.Game)
+        {
+            endPanel.SetActive(true);
+            endPanel.GetComponent<Animator>().SetBool("show", true);
+            if (winner == Winner.Black)
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("BLACK_WINS");
+            else if (winner == Winner.White)
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("WHITE_WINS");
+            else
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("DRAW");
 
-        stage = Stage.End;
-        endTimer = 1;
+            stage = Stage.End;
+            endTimer = 1;
+        }
+        else
+        {
+            endPanel.SetActive(true);
+            endPanel.GetComponent<Animator>().SetBool("show", true);
+            if (winner == Winner.White)
+            {
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("COMPLETED");
+                stage = Stage.AdventureWin;
+            }
+            else
+            {
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("FAIL");
+                stage = Stage.AdventureFail;
+            }
+            endTimer = 1;
+        }
     }
 }
