@@ -4469,6 +4469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 396cd6b18360fce4f95d5301e77e8be1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deleteSaveGameOnStart: 0
   boardView: {fileID: 901963312}
   camera: {fileID: 963194229}
   stage: 0

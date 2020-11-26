@@ -30,11 +30,18 @@ public class SaveGame
 
     private void Load()
     {
-        string text = System.IO.File.ReadAllText(filePath);
-        fsData data = fsJsonParser.Parse(text);
-        object deserialized = null;
-        serializer.TryDeserialize(data, typeof(List<(int, int)>), ref deserialized).AssertSuccessWithoutWarnings();
-        completedLevels = (List<(int, int)>)deserialized;
+        if (System.IO.File.Exists(filePath))
+        {
+            string text = System.IO.File.ReadAllText(filePath);
+            fsData data = fsJsonParser.Parse(text);
+            object deserialized = null;
+            serializer.TryDeserialize(data, typeof(List<(int, int)>), ref deserialized).AssertSuccessWithoutWarnings();
+            completedLevels = (List<(int, int)>)deserialized;
+        }
+        else
+        {
+            completedLevels = new List<(int, int)>();
+        }
     }
 
     private void Save()
@@ -46,7 +53,8 @@ public class SaveGame
 
     public void Reset()
     {
-        
+        File.Delete(filePath); 
+        Load();
     }
 
     public void LevelCompleted(int zone, int level)

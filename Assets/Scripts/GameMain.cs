@@ -26,6 +26,7 @@ public class GameMain : MonoBehaviour
         End
     }
 
+    public bool deleteSaveGameOnStart;
     public BoardView boardView;
     public CameraController camera;
     private float angle = 60;
@@ -50,6 +51,7 @@ public class GameMain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (deleteSaveGameOnStart) SaveGame.GetInstance().Reset();
         Localization.SetLanguage(Language.CA);
         adventureMenu = GetComponent<AdventureMenu>();
         audioSource = GetComponent<AudioSource>();
@@ -177,8 +179,11 @@ public class GameMain : MonoBehaviour
                 }
                 if (stage == Stage.AdventureWin)
                 {
-                    stage = Stage.Adventure;
-                    // TODO: Go to adventure menu                    
+                    boardView.Clear();
+                    adventureCanvas.SetActive(true);
+                    adventureCanvas.GetComponent<Animator>().SetBool("show", true);
+                    adventureMenu.DrawButtons(1, StartAdventureLevel);
+                    stage = Stage.AdventureMenu;
                 }
             }
         }
@@ -351,18 +356,19 @@ public class GameMain : MonoBehaviour
             stage = Stage.End;
             endTimer = 1;
         }
-        else
+        else if (stage == Stage.Adventure)
         {
             endPanel.SetActive(true);
             endPanel.GetComponent<Animator>().SetBool("show", true);
             if (winner == Winner.White)
             {
-                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("COMPLETED");
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("COMPLETED_ADVENTURE");
                 stage = Stage.AdventureWin;
+                SaveGame.GetInstance().LevelCompleted(currentZone, currentLevel);
             }
             else
             {
-                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("FAIL");
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("FAILED_ADVENTURE");
                 stage = Stage.AdventureFail;
             }
             endTimer = 1;

@@ -29,7 +29,6 @@ public class AdventureMenu : MonoBehaviour
 
     public void DrawButtons(int zone, Action<int, int> callback)
     {
-        this.zone = zone;
         this.callback = callback;
         buttons.ClearAll();
         maxZone = 10;
@@ -50,6 +49,9 @@ public class AdventureMenu : MonoBehaviour
                 completed = save.IsLevelCompleted(z, i);
             }
         }
+        for (int z = 0; z <= maxZone; z++)
+            if (save.IsLevelCompleted(z, 0))
+                this.zone = z;
         progressText.text = GetProgress();
     }
 
