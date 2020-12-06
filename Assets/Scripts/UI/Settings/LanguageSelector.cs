@@ -32,5 +32,6 @@ public class LanguageSelector : MonoBehaviour
         for (int i = 0; i < options.Length; i++)
             options[i].GetComponentInChildren<Text>().color = (i == index) ? Color.white : Color.black;
         Localization.SetLanguage((Language)index);
+        PlayerPrefs.SetInt("Language", index);
     }
 }

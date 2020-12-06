@@ -52,7 +52,8 @@ public class GameMain : MonoBehaviour
     void Start()
     {
         if (deleteSaveGameOnStart) SaveGame.GetInstance().Reset();
-        Localization.SetLanguage(Language.CA);
+        
+        Localization.SetLanguage((Language)PlayerPrefs.GetInt("Language", 0));
         adventureMenu = GetComponent<AdventureMenu>();
         audioSource = GetComponent<AudioSource>();
         smoothCamera = true;
