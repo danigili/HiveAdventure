@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     public Vector3 position;
     public float size;
     private float angle;
-    public float speed = 10;
+    private float speed = 10;
     public float rotationSpeed = 2;
     private Camera camera;
     private float height = 6.87f;
@@ -27,10 +27,12 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, size, speed * Time.deltaTime);
-        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(angle, 0, 0), rotationSpeed * Time.deltaTime);
+        float time = Time.deltaTime;
+        if (time > 0.05f) time = 0.05f;
+        camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, size, speed * time);
+        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(angle, 0, 0), rotationSpeed * time);
         if (Mathf.Abs(transform.eulerAngles.x - angle)<0.2f)
-            transform.position = Vector3.Lerp(transform.position, position, speed * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, position, speed * time);
         else
             transform.position = new Vector3(xCenter, height, yCenter - Mathf.Tan(Mathf.PI / 180 * (90 - transform.eulerAngles.x)) * height) ;
     }

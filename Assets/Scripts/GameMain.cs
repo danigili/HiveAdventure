@@ -46,7 +46,6 @@ public class GameMain : MonoBehaviour
     public AudioClip[] startClips;
     private int currentZone;
     private int currentLevel;
-    private bool smoothCamera;
 
     // Start is called before the first frame update
     void Start()
@@ -56,7 +55,6 @@ public class GameMain : MonoBehaviour
         Localization.SetLanguage((Language)PlayerPrefs.GetInt("Language", 0));
         adventureMenu = GetComponent<AdventureMenu>();
         audioSource = GetComponent<AudioSource>();
-        smoothCamera = true;
     }
 
     // Update is called once per frame
@@ -78,16 +76,15 @@ public class GameMain : MonoBehaviour
             audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
             yield return new WaitForSeconds(1);
             //boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
-            boardView.Initialize(Serializer<Board>.FromFile("Adventure/Levels/Zone0/Level1"), EndOfGame);
+            boardView.Initialize(Serializer<Board>.FromFile("Text/Boards/new"), EndOfGame);
         }
         if (stage == Stage.Adventure)
         {
             boardView.Clear();
             audioSource.PlayOneShot(startClips[UnityEngine.Random.Range(0, startClips.Length)]);
             yield return new WaitForSeconds(1);
-            smoothCamera = false;
             boardView.Initialize(Serializer<Board>.FromFile("Adventure/Levels/Zone"+currentZone.ToString()+"/Level"+currentLevel.ToString()), EndOfGame);
-            smoothCamera = false;
+            UpdateCameraPosition(false);
         }
     }
 
@@ -103,7 +100,7 @@ public class GameMain : MonoBehaviour
             angle = 60;
     }
 
-    private void UpdateCameraPosition()
+    private void UpdateCameraPosition(bool smooth = true)
     {
         if (stage == Stage.Start || stage == Stage.Mode)
         {
@@ -130,9 +127,8 @@ public class GameMain : MonoBehaviour
             {
                 float xMin, xMax, yMin, yMax;
                 boardView.BoardSize(out xMin, out xMax, out yMin, out yMax);
-                camera.SetCenter((xMin + xMax) / 2, (yMin + yMax) / 2, smoothCamera);
-                camera.SetSize(Mathf.Max(Mathf.Max(xMax - xMin, yMax - yMin) * 0.5f + 1f, +5), smoothCamera);
-                if (boardView.piecesPool.Count() > 0) smoothCamera = true;
+                camera.SetCenter((xMin + xMax) / 2, (yMin + yMax) / 2, smooth);
+                camera.SetSize(Mathf.Max(Mathf.Max(xMax - xMin, yMax - yMin) * 0.5f + 1f, +5), smooth);
             }
         }
         else if (stage == Stage.AdventureMenu)
@@ -337,7 +333,6 @@ public class GameMain : MonoBehaviour
         adventureCanvas.GetComponent<Animator>().SetBool("show", false);
         boardView.ai2 = true;
         stage = Stage.Adventure;
-        smoothCamera = false;
         StartCoroutine(RestartGame());
     }
 

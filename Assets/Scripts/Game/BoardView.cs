@@ -283,10 +283,10 @@ public class BoardView : MonoBehaviour
 
         foreach (PieceObject p in piecesPool.Next<PieceObject>())
         {
-            xMin = Math.Min(xMin, p.transform.position.x);
-            xMax = Math.Max(xMax, p.transform.position.x);
-            yMin = Math.Min(yMin, p.transform.position.z);
-            yMax = Math.Max(yMax, p.transform.position.z);
+            xMin = Math.Min(xMin, p.GetWorldPosition().x);
+            xMax = Math.Max(xMax, p.GetWorldPosition().x);
+            yMin = Math.Min(yMin, p.GetWorldPosition().z);
+            yMax = Math.Max(yMax, p.GetWorldPosition().z);
         }
     }
 }
