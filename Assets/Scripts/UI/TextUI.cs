@@ -7,7 +7,7 @@ public class TextUI : MonoBehaviour
 {
     public string key;
 
-    private Language language;
+    public Language language;
     private Text textComponent;
     private TextMesh textMesh;
 
@@ -15,11 +15,11 @@ public class TextUI : MonoBehaviour
     {
         gameObject.TryGetComponent<Text>(out textComponent);
         gameObject.TryGetComponent<TextMesh>(out textMesh);
+        SetText();
     }
 
     private void OnEnable()
     {
-
         SetText();
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,12 +8,13 @@ public enum Language
 { 
     CA,
     ES,
-    EN
+    EN,
+    UNDEF
 }
 
 public class Localization
 {
-    private static Language firstLanguage;
+    private static Language firstLanguage = Language.UNDEF;
     private static Dictionary<string, string> firstDictionary;
     private static Dictionary<string, string> secondDictionary;
 
@@ -32,9 +34,9 @@ public class Localization
 
     public static void SetLanguage(Language first, Language second = Language.EN)
     {
-        firstLanguage = first;
         firstDictionary = LoadLanguageFile(first);
         secondDictionary = LoadLanguageFile(second);
+        firstLanguage = first;
     }
 
     public static Language GetCurrentLanguage()
@@ -44,10 +46,12 @@ public class Localization
 
     public static string Translate(string key)
     {
+        if (firstLanguage == Language.UNDEF)
+            return "";
         string result = null;
         if (!firstDictionary.TryGetValue(key, out result))
             if (!secondDictionary.TryGetValue(key, out result))
-                Debug.LogError("Localization. Key [" + key + "]Not found");
+                Debug.LogError("Localization. Key [" + key + "] Not found");
         return result;
     }
 }
