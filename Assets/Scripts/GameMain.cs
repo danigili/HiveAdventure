@@ -40,6 +40,7 @@ public class GameMain : MonoBehaviour
     public GameObject cameraButton;
     public GameObject settingsMenu;
     public GameObject pauseMenu;
+    public GameObject creditsMenu;
     private AdventureMenu adventureMenu;
     private AudioSource audioSource;
     public GameObject adventureCanvas;
@@ -324,6 +325,17 @@ public class GameMain : MonoBehaviour
     public void ClosePause()
     {
         pauseMenu.GetComponent<Animator>().SetBool("show", false);
+    }
+
+    public void OpenCredits()
+    {
+        creditsMenu.SetActive(true);
+        creditsMenu.GetComponent<Animator>().SetBool("show", true);
+    }
+
+    public void CloseCredits()
+    {
+        creditsMenu.GetComponent<Animator>().SetBool("show", false);
     }
 
     public void StartAdventureLevel(int zone, int level)
