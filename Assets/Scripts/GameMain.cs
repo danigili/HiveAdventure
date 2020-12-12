@@ -370,13 +370,13 @@ public class GameMain : MonoBehaviour
             endPanel.GetComponent<Animator>().SetBool("show", true);
             if (winner == Winner.White)
             {
-                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("COMPLETED_ADVENTURE");
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("LEVEL_COMPLETED");
                 stage = Stage.AdventureWin;
                 SaveGame.GetInstance().LevelCompleted(currentZone, currentLevel);
             }
             else
             {
-                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("FAILED_ADVENTURE");
+                endPanel.transform.Find("Text").GetComponent<Text>().text = Localization.Translate("LEVEL_FAILED");
                 stage = Stage.AdventureFail;
             }
             endTimer = 1;
