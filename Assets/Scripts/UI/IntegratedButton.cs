@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 // This class represents a piece that behaves like a button in the interated 3D interface.
 public class IntegratedButton : MonoBehaviour
@@ -25,6 +26,8 @@ public class IntegratedButton : MonoBehaviour
 
     private void OnMouseOver()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
         Vector3 pos = transform.position;
         pos.y = 1f;
         transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * speed*2);
@@ -32,6 +35,8 @@ public class IntegratedButton : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
         StartCoroutine(GameObject.FindObjectOfType<GameMain>().IntegratedButtonClick(option));        
     }
 }
