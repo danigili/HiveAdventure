@@ -35,8 +35,17 @@ public class IntegratedButton : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (IsPointerOverUIObject() || EventSystem.current.IsPointerOverGameObject())
             return;
         StartCoroutine(GameObject.FindObjectOfType<GameMain>().IntegratedButtonClick(option));        
+    }
+
+    private bool IsPointerOverUIObject()
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 }

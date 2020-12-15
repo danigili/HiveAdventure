@@ -17,7 +17,7 @@ public class PieceObject : HexObject
 
     void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (IsPointerOverUIObject() || EventSystem.current.IsPointerOverGameObject())
             return;
 
         clickCallback(this);
@@ -37,5 +37,14 @@ public class PieceObject : HexObject
         if (texture == null)
             texture = Resources.Load<Texture2D>("Textures/green");
         GetComponent<Renderer>().material.mainTexture = texture;
+    }
+
+    private bool IsPointerOverUIObject()
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 }
