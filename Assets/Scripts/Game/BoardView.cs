@@ -17,16 +17,18 @@ public class BoardView : MonoBehaviour
     public PiecesPanel[] panels;
     public bool ai1 = false;
     public bool ai2 = true;
-    public bool currentSide=false;
+    public bool currentSide = false;
     private Action<Winner> endCallback;
     private bool finished = false;
     private AudioSource audioSource;
     public AudioClip[] soundArray;
     public int turnsCounter;
     public Hourglass hourglass;
+    public BackgroundClick bg;
 
     public void Initialize(Board board, Action<Winner> endCallback, bool side = false)
     {
+        bg.Initialize(ClickDownBackground);
         this.model = board;
         this.currentSide = side;
         this.endCallback = endCallback;
@@ -57,7 +59,7 @@ public class BoardView : MonoBehaviour
             {
                 GameObject chainInstance = chainsPool.GetInstance(true);
                 chainInstance.GetComponent<HexObject>().SetHexPosition(pair.Value.position);
-            }    
+            }
         }
 
         foreach (Position p in model.GetBlockedPositions())
@@ -69,7 +71,7 @@ public class BoardView : MonoBehaviour
         panels[0].Initialize(model, ClickPanelPiece);
         panels[1].Initialize(model, ClickPanelPiece);
         panels[0].transform.parent.GetComponent<Animator>().SetBool("show", true);
-       
+
         audioSource = GetComponent<AudioSource>();
 
         markersPool.ClearAll();
@@ -94,7 +96,7 @@ public class BoardView : MonoBehaviour
         DateTime inicio = DateTime.Now;
         for (int i = 0; i < 100000; i++)
             model.BreaksCohesion(model.GetPlacedPieces().First().Value);
-        Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds); 
+        Debug.Log((DateTime.Now - inicio).Minutes + ":" + (DateTime.Now - inicio).Seconds + "." + (DateTime.Now - inicio).Milliseconds);
     }
 
     public IEnumerator AIMove(bool side)
@@ -122,7 +124,7 @@ public class BoardView : MonoBehaviour
         }
 
         // Find piece to move in the panel
-        foreach (PiecesPanel panel in panels) 
+        foreach (PiecesPanel panel in panels)
         {
             foreach (PieceUI pui in panel.pieces)
             {
@@ -228,8 +230,15 @@ public class BoardView : MonoBehaviour
             instance.GetComponent<PieceObject>().SetHexPosition(model.GetPiecePosition(selectedUIPiece.piece));
             selectedUIPiece = null;
         }
-        
+
         NextTurn();
+    }
+
+    public void ClickDownBackground()
+    {
+        markersPool.ClearAll();
+        selectedPiece = null;
+        selectedUIPiece = null;
     }
 
     private void NextTurn()
